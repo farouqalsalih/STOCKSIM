@@ -1,0 +1,42 @@
+
+.logo {
+    float: left;
+    height: 80px;
+    width: auto;
+    margin: 10px;
+}
+nav ul {
+    float: left;
+    list-style: none;
+    text-align: right;
+    padding-top: 20px;
+    margin-left: 0px;
+}
+.container {
+    background-color: lightgreen;
+}
+.container::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+nav li {
+    float: left;
+    margin-left: 14px;
+
+}
+nav a {
+    text-decoration: none;
+    color: black;
+    font-size: 21px;
+}
+.maintitle {
+    color: white;
+    background-color: black;
+    text-align: center;
+    text-transform: capitalize;
+    margin: 0px;
+    height: 75px;
+    font-size: 40px;
+    padding: 125px 0px 125px;
+}
