@@ -19,6 +19,42 @@
             </ul>
         </nav>
     </div> 
-    
+    <div class="formdiv">
+        <form method="post" action="">
+            <fieldset>
+                <legend>Search any ticker</legend>
+                <div>
+                    {{ form.ticker.label(class = "form-control-label") }}
+                    {{ form.ticker(class = "form-control form-control-lg") }}
+
+                </div>
+            </fieldset>
+            <div>
+                {{ form.submit(class = "btn btn-outline-info") }}
+                {{ form.csrf_token }}
+            </div>
+        </form>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>info name</th>
+                <th>info</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in infodict %}
+            <tr>
+                <td>
+                    {{x}}
+                </td>
+                <td>
+                    {{infodict[x]}}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+     
 </body>
 </html>
