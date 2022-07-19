@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 4</title>
     <link rel="stylesheet" href="{{ url_for('static', filename ='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -22,6 +23,62 @@
     <p>News sources ideally would go here</p>
     <h1 class = 'maintitle'> Some project name we havn't come up with yet</h1>
     <p>or here</p>
-  
+
+
+
+    {% for stock in stocklists %}
+        {% for ticker in stock %}
+        <table>
+            <tr>
+                <td>
+                    <h1><b>{{ticker}}</b></h1>
+                </td>
+
+                <td>
+                    <div>
+                        <canvas id="{{ticker}}" width="1000" height="300"></canvas>
+                        <script>
+                            var canvas = document.getElementById("{{ticker}}");
+                            var ctx = canvas.getContext("2d");
+        
+                            var lineChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: {{ stock[ticker]['Date'] | safe }},
+                                    datasets: [
+                                        {
+                                        label: 'DataPoints',
+                                        data: {{ stock[ticker]['Close'] | safe }},
+                                        fill: false,
+                                        backgroundColor: "rgb(0,100,0)",
+                                        borderColor: "rgb(0,100,0)",
+                                        lineTension: 0.1
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive:false,
+                                    scales: {
+                                        xAxes: [{
+                                            display: false
+                                        }],
+                                        yAxes: [{
+                                            display: false
+                                        }],
+                                    },
+                                    legend: {
+                                        display: false
+                                    },
+                                }
+                            });
+                        </script>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        {% endfor %}
+    {% endfor %}
+
 </body>
 </html>

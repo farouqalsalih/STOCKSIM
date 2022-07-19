@@ -1,15 +1,27 @@
+from optparse import Values
+from tkinter.ttk import LabeledScale
 from flask import Flask, render_template, url_for, flash, redirect, request
 from forms import RegistrationForm
-from stockinfo import getinfo
+from stockinfo import getinfo, getlabels, getvalues
+
+
+def getpopularstocks():
+    stocksinfo = []
+    stocks = ['NFLX', 'AAPL', 'AMC', 'GME']
+    for stock in stocks:
+        stockdict = {}
+        stockdict[stock] = {'Date' : getlabels(stock, '1mo'), 'Close' : getvalues(stock, '1mo')}
+        stocksinfo.append(stockdict)
+    return stocksinfo
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '2c27df9a9141cf1529a88ca4da79adf3'
-random_list = [1 ,2 ,3 ,4 ,5, 69, 'end']
 
 @app.route('/')
 def index():
-    return render_template('home.html', random = random_list)
+    stocks = getpopularstocks()
+    return render_template('home.html', stocklists = stocks)
 
 @app.route('/stocksearch.html', methods = ["POST", "GET"])
 def search():
@@ -20,7 +32,13 @@ def search():
         #flash(f"Search on {form.ticker.data} was successful!", 'success')
         ticker = form.ticker.data.upper()
         info = getinfo(ticker)
-        return render_template('stocksearch.html', form = form, infodict = info)        
+        
+        labels = getlabels(ticker, '1mo')
+        values = getvalues(ticker, '1mo')
+        print(labels)
+        print(values)
+
+        return render_template('stocksearch.html', form = form, infodict = info, labels = labels, values = values)        
     
     return render_template('stocksearch.html', form = form)
 
@@ -34,9 +52,9 @@ def login():
 
 @app.route('/home.html')
 def home():
-    return render_template('home.html')
-
+    stocks = getpopularstocks()
+    return render_template('home.html', stocklists = stocks)
 
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run( debug = True)

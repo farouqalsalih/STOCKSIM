@@ -40,3 +40,7 @@ nav a {
     font-size: 40px;
     padding: 125px 0px 125px;
 }
+canvas {
+    background-color: black;
+    align-content: center;
+}

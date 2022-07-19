@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 4</title>
     <link rel="stylesheet" href="{{ url_for('static', filename ='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -35,6 +36,43 @@
             </div>
         </form>
     </div>
+
+
+
+    <div>
+        <canvas id="lineChart" width="1700" height="800"></canvas>
+        <script>
+            var canvas = document.getElementById("lineChart");
+            var ctx = canvas.getContext("2d");
+
+            var lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ labels | safe }},
+                    datasets: [
+                        {
+                        label: 'DataPoints',
+                        data: {{values | safe}},
+                        fill: false,
+                        backgroundColor: "rgb(0,100,0)",
+                        borderColor: "rgb(0,100,0)",
+                        lineTension: 0.1,
+                        color: 'rgb(100,0,0)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive:false
+                }
+            });
+        </script>
+    </div>
+
+
+
+
+
+
     <table>
         <thead>
             <tr>
@@ -55,6 +93,8 @@
             {% endfor %}
         </tbody>
     </table>
+
+
      
 </body>
 </html>
