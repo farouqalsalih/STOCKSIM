@@ -5,12 +5,22 @@ from forms import RegistrationForm
 from stockinfo import getinfo, getlabels, getvalues
 
 
-def getpopularstocks():
+def getpopularstocks(stocklist):
     stocksinfo = []
-    stocks = ['NFLX', 'AAPL', 'AMC', 'GME']
+    stocks = stocklist
     for stock in stocks:
         stockdict = {}
-        stockdict[stock] = {'Date' : getlabels(stock, '1mo'), 'Close' : getvalues(stock, '1mo')}
+        priceaction = getvalues(stock, '1mo')
+
+        trend = ''
+        if priceaction[0] <= priceaction[len(priceaction) - 1]:
+            trend = 'Up'
+        else:
+            trend = 'Down'
+        
+        percentchange = ((priceaction[len(priceaction) - 1] - priceaction[0]) / priceaction[0]) * 100
+        pricechange = priceaction[len(priceaction) - 1] - priceaction[0]
+        stockdict[stock] = {'Date' : getlabels(stock, '1mo'), 'Close' : getvalues(stock, '1mo'), 'Trend' : trend, 'PercentChange' : percentchange, 'PriceChange' : pricechange}
         stocksinfo.append(stockdict)
     return stocksinfo
 
@@ -20,8 +30,9 @@ app.config['SECRET_KEY'] = '2c27df9a9141cf1529a88ca4da79adf3'
 
 @app.route('/')
 def index():
-    stocks = getpopularstocks()
-    return render_template('home.html', stocklists = stocks)
+    index = getpopularstocks(['^IXIC', '^GSPC', '^DJI'])
+    stocks = getpopularstocks(['NFLX', 'AAPL', 'AMC', 'GME'])
+    return render_template('home.html', majorindexes = index, stocklists = stocks)
 
 @app.route('/stocksearch.html', methods = ["POST", "GET"])
 def search():
@@ -52,9 +63,9 @@ def login():
 
 @app.route('/home.html')
 def home():
-    stocks = getpopularstocks()
-    return render_template('home.html', stocklists = stocks)
-
+    index = getpopularstocks(['^IXIC', '^GSPC', '^DJI'])
+    stocks = getpopularstocks(['NFLX', 'AAPL', 'AMC', 'GME'])
+    return render_template('home.html', majorindexes = index, stocklists = stocks)
 
 if __name__ == '__main__':
-    app.run( debug = True)
+    app.run(port=0, debug = True)

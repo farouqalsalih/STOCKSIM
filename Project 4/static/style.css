@@ -1,4 +1,9 @@
-
+body {
+    height: 100%;
+}
+html {
+    height: 100%;
+}
 .logo {
     float: left;
     height: 80px;
@@ -32,7 +37,7 @@ nav a {
 }
 .maintitle {
     color: white;
-    background-color: black;
+    background-image: url("stockbackground.jpeg");
     text-align: center;
     text-transform: capitalize;
     margin: 0px;
@@ -41,6 +46,77 @@ nav a {
     padding: 125px 0px 125px;
 }
 canvas {
-    background-color: black;
+    background-color: lightgrey;
     align-content: center;
 }
+.greenmessage {
+    color: rgb(0,204,0);
+}
+.redmessage {
+    color: rgb(139,0,0);
+}
+.leftalign {
+    float: left;
+    height: 100%;
+    width: 80%;
+
+}
+.rightalign{
+    float: left;
+    height: 100%;
+    width: 20%;
+    background-color: lightgray;
+    
+
+}
+.watchlistandnews {
+
+}
+#Watchlist {
+    text-align: center;
+}
+#stockinfo1 {
+    list-style: none;
+    margin: 0px 0px 0px;
+    padding: 0px 0px 0px;
+}
+.leftcharttd {
+    width: 30%;
+    padding: 10px;
+}
+.rightcharttd {
+    width: 70%;
+}
+.stockgraph {
+    width: 100%;
+    padding
+}
+h5 {
+    margin: 0px 0px 0px;
+}
+h3 {
+    margin: 0px 0px 0px;
+}
+.majorindexes {
+    width: 100%;
+}
+.majorindexestable {
+    width: 100%;
+    padding-bottom: 20px;
+    background-color: lightgray;
+}
+canvas {
+    margin: auto;
+    display: block;
+}
+.indexh2 {
+    margin: 0px 0px 0px;
+}
+.indextablerows {
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+}
+table td + td { border-left:2px solid black; }
+
+
+
