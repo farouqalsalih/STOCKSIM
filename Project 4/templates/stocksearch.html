@@ -20,6 +20,12 @@
             </ul>
         </nav>
     </div> 
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
     <div class="formdiv">
         <form method="post" action="">
             <fieldset>
@@ -41,32 +47,99 @@
 
     <div>
         <canvas id="lineChart" width="1700" height="800"></canvas>
-        <script>
-            var canvas = document.getElementById("lineChart");
-            var ctx = canvas.getContext("2d");
+        {% if trend == "Up" %}
+            <script>
+                var canvas = document.getElementById("lineChart");
+                var ctx = canvas.getContext("2d");
 
-            var lineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: {{ labels | safe }},
-                    datasets: [
-                        {
-                        label: 'DataPoints',
-                        data: {{values | safe}},
-                        fill: false,
-                        backgroundColor: "rgb(0,100,0)",
-                        borderColor: "rgb(0,100,0)",
-                        lineTension: 0.1,
-                        color: 'rgb(100,0,0)'
-                        }
-                    ]
-                },
-                options: {
-                    responsive:false
-                }
-            });
-        </script>
+                var lineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ labels | safe }},
+                        datasets: [
+                            {
+                            label: 'DataPoints',
+                            data: {{ values | safe }},
+                            fill: true,
+                            backgroundColor: "rgba(57,255,20,.7)",
+                            borderColor: "rgba(0,204,0,.7)",
+                            lineTension: 0.1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive:false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                             },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                        },
+                    }
+                });
+            </script>
+        {% else %}
+            <script>
+                var canvas = document.getElementById("lineChart");
+                var ctx = canvas.getContext("2d");
+
+                var lineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ labels | safe }},
+                        datasets: [
+                            {
+                            label: 'DataPoints',
+                            data: {{ values | safe }},
+                            fill: true,
+                            backgroundColor: "rgba(255, 49, 49, .7)",
+                            borderColor: "rgba(139,0,0,.7)",
+                            lineTension: 0.1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive:false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                             },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                        },
+                    }
+                });
+            </script>
+        {% endif %}       
     </div>
+
+    <div>
+        <table>
+            
+        </table>
+    </div>
+
 
 
 

@@ -1,5 +1,6 @@
 body {
     height: 100%;
+    background-color: rgb(43, 43, 43);
 }
 html {
     height: 100%;
@@ -19,6 +20,9 @@ nav ul {
 }
 .container {
     background-color: lightgreen;
+    position: fixed;
+    width: 100%;
+    top: 0px;
 }
 .container::after {
     content: '';
@@ -46,7 +50,9 @@ nav a {
     padding: 125px 0px 125px;
 }
 canvas {
-    background-color: lightgrey;
+    margin: auto;
+    display: block;
+    background-color: rgb(43, 43, 43);
     align-content: center;
 }
 .greenmessage {
@@ -58,14 +64,15 @@ canvas {
 .leftalign {
     float: left;
     height: 100%;
-    width: 80%;
+    width: 66.5%;
+    background-color: rgb(43, 43, 43);
 
 }
 .rightalign{
     float: left;
     height: 100%;
-    width: 20%;
-    background-color: lightgray;
+    width: 33.5%;
+    background-color: rgb(43, 43, 43);
     
 
 }
@@ -83,6 +90,7 @@ canvas {
 .leftcharttd {
     width: 30%;
     padding: 10px;
+    text-align: center;
 }
 .rightcharttd {
     width: 70%;
@@ -103,20 +111,69 @@ h3 {
 .majorindexestable {
     width: 100%;
     padding-bottom: 20px;
-    background-color: lightgray;
-}
-canvas {
-    margin: auto;
-    display: block;
+    background-color: rgb(43, 43, 43);
 }
 .indexh2 {
     margin: 0px 0px 0px;
 }
 .indextablerows {
-    border-left: 5px solid black;
-    border-right: 5px solid black;
+    border-left: 5px solid white;
+    border-right: 5px solid white;
 }
-table td + td { border-left:2px solid black; }
+table td + td { border-left:2px solid white; }
 
+.newsh1 {
+    text-align: center;
+}
+.newsdiv {
+    background-color: rgb(43, 43, 43);
+    margin-bottom: 20px;
+    width: 100%;
+    border: 2px solid white;
+}
+.newsanchor {
+    text-decoration: none;}
+.newsimage {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    width: 100px;
+    height: 100px;
+}
+.leftpartofnewsanchor {
+    width: 40%;
+    float: left;
+}
+.rightpartofnewsanchor {
+    width: 60%;
+}
+h1, h2, h3, h4, h5, p, th, td, b {
+    color: white;
 
-
+}
+fieldset, legend {
+    background-color: rgb(43, 43, 43);
+    border: 3px solid white;
+}
+.formdiv {
+    background-color: rgb(43, 43, 43);
+}
+legend, .form-control-label, input {
+    color: white;
+}
+#submit {
+    background-color: rgb(43, 43, 43);
+    border: 3px solid white;
+}
+#lineChart {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 2px solid white;
+}
+#ticker {
+    border: 2px solid white;
+    background-color:  rgb(43, 43, 43);
+}
+fieldset {
+    margin-bottom: 10px;
+}

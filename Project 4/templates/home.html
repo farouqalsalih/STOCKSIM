@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 4</title>
+    <title>StocksFinder</title>
     <link rel="stylesheet" href="{{ url_for('static', filename ='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" href="{{ url_for('static', filename ='stocklogo.png') }}">
@@ -47,6 +47,7 @@
                                             datasets: [
                                                 {
                                                 label: 'DataPoints',
+                                                pointRadius: [0],
                                                 data: {{ index[ticker]['Close'] | safe }},
                                                 fill: true,
                                                 backgroundColor: "rgba(57,255,20,.7)",
@@ -85,6 +86,7 @@
                                             datasets: [
                                                 {
                                                 label: 'DataPoints',
+                                                pointRadius: [0],
                                                 data: {{ index[ticker]['Close'] | safe }},
                                                 fill: true,
                                                 backgroundColor: "rgba(255, 49, 49, .7)",
@@ -123,8 +125,32 @@
     </div>
     <div class = "watchlistandnews">
         <div class = 'leftalign'>
-            <h1> The news sources would go here </h1>
+            <h1 class = 'newsh1'> Financial News </h1>
+            {% for news in stocknews %}
+                <div class = "newsdiv">
+
+                    <a href=" {{ news['link'] }} " target="_blank" class= "newsanchor">
+
+                        <div class = 'leftpartofnewsanchor'>
+                            {% if news['image_url'] != None %}
+                                <img src=" {{ news['image_url'] }} " class = "newsimage">
+                            {% else %}
+                                <img src=" {{ url_for('static', filename ='stocklogo.png') }} " class = "newsimage">
+                            {% endif %}
+                        </div>
+                        <div class = 'rightpartofnewsanchor'>
+                            <h3 class = "newsanchortext"> <b> {{ news['title'] }} </b> </h3>
+                            <br>
+                            <h5 class = 'newsanchortext'> {{ news['description'] }} </h5>
+                        </div>
+                        
+                    </a>
+                    
+                </div>
+            {% endfor %}
         </div>
+
+
         <div class = "rightalign">
             <h1 id = 'Watchlist'>My Watchlist</h1>
             {% for stock in stocklists %}
@@ -148,7 +174,7 @@
             
                             <td class = "rightcharttd">
                                 <div>
-                                    <canvas id="{{ticker}}" width="200" height="75"></canvas>
+                                    <canvas id="{{ticker}}" width="300" height="75"></canvas>
                                     {% if stock[ticker]['Trend'] == "Up" %}
                                         <script>
                                             var canvas = document.getElementById("{{ticker}}");
@@ -161,6 +187,7 @@
                                                     datasets: [
                                                         {
                                                         label: 'DataPoints',
+                                                        pointRadius: [0],
                                                         data: {{ stock[ticker]['Close'] | safe }},
                                                         fill: true,
                                                         backgroundColor: "rgba(57,255,20,.7)",
@@ -199,6 +226,7 @@
                                                     datasets: [
                                                         {
                                                         label: 'DataPoints',
+                                                        pointRadius: [0],
                                                         data: {{ stock[ticker]['Close'] | safe }},
                                                         fill: true,
                                                         backgroundColor: "rgba(255, 49, 49, .7)",
