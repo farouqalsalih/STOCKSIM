@@ -1,0 +1,111 @@
+{% extends "home-base.html" %}
+{% block home %}
+<!-- Body Header -->
+<header id="header">
+    <div class="logo">
+        <span class="icon">
+            <img src="{{ url_for('static', filename='assets/webfonts/noun-heatwave-white.svg') }}" alt="Heatwave SVG">
+        </span>
+    </div>
+
+<!-- Enter Location without logging-in -->
+    <div class="content">
+        <div class="inner">
+        <!-- Location Header -->
+            <h1>Enter Location</h1>
+
+        <!-- Location Form -->
+            {% block location_form %} {% endblock location_form %}
+        </div>
+    </div>
+
+<!--
+    Links to the home-page articles: about, docs
+    Links to login and registration pages: login, register
+-->
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+            <li><a href="#docs">Docs</a></li>
+            <!--<li><a href="#elements">Elements</a></li>-->
+        </ul>
+    </nav>
+</header>
+
+<!-- Main -->
+<div id="main">
+
+    <!-- About -->
+        <article id="about">
+            <h2 class="major">About</h2>
+
+            <!--<span class="image main"><img src="{{ url_for('static', filename='images/pic01.jpg') }}" alt="" /></span> -->
+            <p>Bringing awareness to people about weather conditions
+                 by providing them with information about how 
+                the weather will be on the current day and in three days time.
+                This weather app can help users make decisions about their attire and daily activities.</p>
+            <p>Here are some examples of places that are experiencing terrible weather 
+                conditions in the world.
+                 <a href="https://earthobservatory.nasa.gov/images/150083/heatwaves-and-fires-scorch-europe-africa-and-asia?linkId=173253037#:~:text=In%20June%20and%20July%202022%2C%20heatwaves%20struck%20Europe%2C,of%20the%20Eastern%20Hemisphere%20on%20July%2013%2C%202022.">click here!</a> 
+                 We are here to alert them of the current weather, so they could adequately prepare for what is to come!</p>
+        </article>
+
+    <!-- Documentation -->
+        <article id="docs">
+            <h2 class="major">Documentation</h2>
+            <h3>Product Usage</h3>
+            <p> Anyone who needs to know the weather information 
+                can benefit from this website to gain better insight
+                on what to wear for that day as well as 3 days in advance.
+                This will also help with planning activities affected by
+                the weather.</p>
+            <h3>Aspects of Functionality</h3>
+            <p>A user has the option to either input a city name, log in, or 
+                register with ther email and password.
+                <br> 
+                Once the information 
+                has been entered, the user will be taken to a page with that locations
+                weather information as well as climate change information based on their
+                location as well 
+            </p>
+            <h3>Architecture of a Technical Product</h3>
+                <div class="doc_page_technical_elements">
+                <h4>Languages used:</h4>
+                    <ul>
+                        <li>Python</li>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                    </ul>
+                </div>
+                <div class="doc_page_technical_elements" >
+                <h4>APIs used:</h4>
+                    <ul>
+                        <li>WeatherApi</li>
+                    </ul>
+                
+                </div>
+                <div class="doc_page_technical_elements" >
+                <h4>Other Resources:</h4>
+                    <ul>
+                        <li>JavaScript</li>
+                        <li>Flask</li>
+                    </ul>
+                
+                </div>
+            <div id="contact_part">
+            <h3>More about the creators</h3>
+            <ul>
+                <li><a href="https://github.com/AdelinaKachinda">Adelina Kachinda |</a></li>
+                <li><a href="https://github.com/LoganMercadillo">Logan Mercadillo |</a></li>
+                <li><a href="https://github.com/bellamorales">Marysabel Morales</a></li>
+
+            </ul>
+            <p>*Click on our names to be redirected to our git hub pages*</p>
+            </div>
+
+        </article>
+
+</div>
+{% endblock home %}

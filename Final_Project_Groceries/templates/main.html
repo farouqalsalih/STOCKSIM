@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<!--
+	Eventually by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Project Heatwave</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />
+	</head>
+	<body class="is-preload">
+
+		<div class="container">
+			<img class = 'logo' src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}"> 
+			<nav>
+				<ul id = 'subpages'>
+					<li><a href="home.html">HOME</a></li>
+					<li><a href="register.html">REGISTER</a></li>
+					<li><a href="login.html">LOGIN</a></li>
+					<li><a href="stocksearch.html">STOCK SEARCH</a> </li>
+					<li><a href="resources.html">RESOURCES</a></li>
+					{% if current_user.is_authenticated %}
+						<li class = 'specificli'> <a> YOU ARE CURRENTLY LOGGED IN AS: {{current_user.username}} </a> </li>
+						<li> <a href="/logout"> LOGOUT </a> </li>
+					{% endif %}
+				</ul>
+			</nav>
+		</div> 
+		<style>
+			.logo {
+				float: left;
+				height: 80px;
+				width: auto;
+				margin: 10px;
+			}
+			body {
+				height: 100%;
+				width: 100%;
+			}
+			html {
+				height: 100%;
+				width: 100%;
+			}
+			nav ul {
+				float: left;
+				list-style: none;
+				text-align: right;
+				padding-top: 20px;
+				margin-left: 0px;
+			}
+			.container {
+				background-color: lightblue;
+				position: fixed;
+				width: 100%;
+				top: 0px;
+				left: 0px;
+			}
+			.container::after {
+				content: '';
+				display: table;
+				clear: both;
+			}
+			nav li {
+				float: left;
+				margin-left: 14px;
+
+			}
+			nav a {
+				text-decoration: none;
+				color: black;
+				font-size: 21px;
+			}
+		</style>
+		<!-- Header -->
+			<header id="header">
+				<h1> GO GO GROCERY </h1>
+			</header>
+
+			<div class = "shopdiv">
+				{% for store in stores %}
+					<h3> <a href="/store/{{store.storename}}"> {{ store.storename }} {{ store.storeaddress }} </a> </h3>
+				{% endfor %}
+			</div>
+			<h1><a href="/mystore/{{current_user.name}}">HOME {{current_user.name}}</a></h1>
+
+
+		<!-- Scripts -->
+			<script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
+		
+     
+	</body>
+</html>  

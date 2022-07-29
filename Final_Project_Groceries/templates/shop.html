@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<!--
+	Eventually by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Project Heatwave</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />
+	</head>
+	<body class="is-preload">
+		<!-- Header -->
+		<h1> {{store.storename}} {{store.storeaddress}} </h1>
+
+        {% for thing in shopinventory %}
+            <div>
+                <img src="" alt="" class="itemimage">
+                <h4> {{thing.itemname}} {{thing.price}} {{thing.unit}} </h4>
+                <style>
+                    
+                </style>
+            <br>
+            </div>
+        {% endfor %}
+    
+	</body>
+</html>  
