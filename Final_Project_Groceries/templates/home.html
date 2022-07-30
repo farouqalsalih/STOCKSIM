@@ -2,9 +2,20 @@
 {% block home %}
 <!-- Body Header -->
 <header id="header">
+    <title>Go Go Grocery</title>
+	<link rel="icon" href="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}">
     <div class="logo">
         <span class="icon">
-            <img src="{{ url_for('static', filename='assets/webfonts/noun-heatwave-white.svg') }}" alt="Heatwave SVG">
+            <img src="{{ url_for('static', filename='images/grocerylogo.jpeg') }}" alt="Heatwave SVG" class = 'homeimage'>
+            <style>
+                .homeimage {
+                    max-width: 100%;
+                    max-height: 100%;
+                    border-radius: 70px;
+                    left: 100px;
+                }
+            </style>
+
         </span>
     </div>
 
@@ -12,7 +23,7 @@
     <div class="content">
         <div class="inner">
         <!-- Location Header -->
-            <h1>Enter Location</h1>
+            <h1>Go Go Grocery</h1>
 
         <!-- Location Form -->
             {% block location_form %} {% endblock location_form %}

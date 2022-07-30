@@ -1,11 +1,10 @@
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required
+from flask_login import UserMixin, current_user, login_user, LoginManager, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm, LocationForm
+from forms import RegistrationForm, LocationForm, AddToCart
 from forms import LoginForm
-from weather import Weather
-
+from foodnutritionapi import get_nutrition_data
 
 app = Flask(__name__,
             static_folder='../static',
@@ -31,11 +30,11 @@ class User(db.Model, UserMixin):
 class CartItems(db.Model):
     __tablename__ = 'cart'
     itemid = db.Column(db.Integer, primary_key = True)
-    itemname = db.Column(db.String, nullable = False)
+    itemname = db.Column(db.String(20), nullable = False)
     quanitity = db.Column(db.Integer, nullable = False)
-    unit = db.Column(db.String(6), nullable = False)
+    unit = db.Column(db.String(10), nullable = False)
     price = db.Column(db.Float, nullable = False)
-    seller = db.Column(db.String(20), nullable = False)
+    seller = db.Column(db.String(100), nullable = False)
 
     userid = db.Column(db.Integer, db.ForeignKey("user.id"))
 
@@ -55,7 +54,7 @@ class Inventory(db.Model):
     inventoryid = db.Column(db.Integer, primary_key = True)
     itemname = db.Column(db.String(20), nullable = False)
     price = db.Column(db.Float, nullable = False)
-    unit = db.Column(db.String(5), nullable = False)
+    unit = db.Column(db.String(10), nullable = False)
 
     storeid = db.Column(db.Integer, db.ForeignKey("store.storeid"))
 
@@ -211,15 +210,34 @@ def profile(name):
     return 'hi' + name
 
 
-@app.route('/store/<storename>')
+@app.route('/store/<storename>', methods=['GET', 'POST'])
 def storename(storename):
+    form = AddToCart()
+    print(Store.query.filter_by(storename = storename).first())
     query = Inventory.query.filter_by(storeid = Store.query.filter_by(storename = storename).first().storeid).all()
     store = Store.query.filter_by(storename = storename).first()
     print(query)
-    return render_template('shop.html', shopinventory = query, store = store)
+
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            find = Inventory.query.filter_by(inventoryid = form.itemid).first()
+            print(find)
+            if CartItems.query.filter_by(itemname = find.itemname , userid = current_user.id).first() == None:
+                newitem = CartItems(itemname = find.itemname, quanitity = form.amount.data, unit = find.unit, price = find.price, seller = Store.query.filter_by(storeid = find.storeid).first().storename, userid = current_user.id)
+            else:
+                newitem = CartItems(itemname = find.itemname, quanitity = (CartItems.query.filter_by(current_user.id).first().quantity + form.amount.data), unit = find.unit, price = find.price, seller = Store.query.filter_by(storeid = find.storeid).first().storename, userid = current_user.id)
+            db.session.add(newitem)
+            db.session.commit()
+    return render_template('shop.html', shopinventory = query, store = store, form = form)
+
+# this is to show the nutritional details for each food
+@app.route('/nutritionaldetails/<foodname>', methods=['GET', 'POST'])
+def foodnutrition(foodname):
+    nutritionlist = get_nutrition_data(foodname)
+    return render_template('nutritionaldetails.html', itemname = foodname, nutritionlist = nutritionlist)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=0)
+    app.run(debug=True, host = "0.0.0.0")
 
-
+# TODO set host = "0.0.0.0" instead of port 0
 # TODO add logout

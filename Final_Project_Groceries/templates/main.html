@@ -6,12 +6,18 @@
 -->
 <html>
 	<head>
-		<title>Project Heatwave</title>
+		<title>Go Go Grocery</title>
+		<link rel="icon" href="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}">
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />
+		<!--<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />-->
 	</head>
 	<body class="is-preload">
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
 
 		<div class="container">
 			<img class = 'logo' src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}"> 
@@ -29,60 +35,20 @@
 				</ul>
 			</nav>
 		</div> 
-		<style>
-			.logo {
-				float: left;
-				height: 80px;
-				width: auto;
-				margin: 10px;
-			}
-			body {
-				height: 100%;
-				width: 100%;
-			}
-			html {
-				height: 100%;
-				width: 100%;
-			}
-			nav ul {
-				float: left;
-				list-style: none;
-				text-align: right;
-				padding-top: 20px;
-				margin-left: 0px;
-			}
-			.container {
-				background-color: lightblue;
-				position: fixed;
-				width: 100%;
-				top: 0px;
-				left: 0px;
-			}
-			.container::after {
-				content: '';
-				display: table;
-				clear: both;
-			}
-			nav li {
-				float: left;
-				margin-left: 14px;
-
-			}
-			nav a {
-				text-decoration: none;
-				color: black;
-				font-size: 21px;
-			}
-		</style>
 		<!-- Header -->
 			<header id="header">
-				<h1> GO GO GROCERY </h1>
+				<h1 class = "title"> GO GO GROCERY </h1>
 			</header>
 
 			<div class = "shopdiv">
-				{% for store in stores %}
-					<h3> <a href="/store/{{store.storename}}"> {{ store.storename }} {{ store.storeaddress }} </a> </h3>
-				{% endfor %}
+				<table class = 'shoptable'>
+				
+					{% for store in stores %}
+						<tr>
+							<td> <h4> <a href="/store/{{store.storename}}"> {{ store.storename }} <br> {{ store.storeaddress }} <br> x Miles away </a> </h4> </td>
+						</tr>
+					{% endfor %}
+				</table>
 			</div>
 			<h1><a href="/mystore/{{current_user.name}}">HOME {{current_user.name}}</a></h1>
 
@@ -90,6 +56,99 @@
 		<!-- Scripts -->
 			<script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
 		
-     
+			<style>
+				.logo {
+					float: left;
+					height: 80px;
+					width: auto;
+					margin: 10px;
+				}
+				body {
+					height: 100%;
+					width: 100%;
+				}
+				html {
+					height: 100%;
+					width: 100%;
+				}
+				nav ul {
+					float: left;
+					list-style: none;
+					text-align: right;
+					padding-top: 20px;
+					margin-left: 0px;
+				}
+				.container {
+					background-color:rgb(193, 225, 193);
+					position: fixed;
+					width: 100%;
+					top: 0px;
+					left: 0px;
+				}
+				.container::after {
+					content: '';
+					display: table;
+					clear: both;
+				}
+				nav li {
+					float: left;
+					margin-left: 14px;
+
+				}
+				nav a {
+					text-decoration: none;
+					color: black;
+					font-size: 21px;
+				}
+				.title {
+					top: 0px;
+					height: 30vh;
+					width: 100%;
+					text-align: center;
+					background-image: url("../static/images/h1image.jpeg");
+					line-height: 30vh;
+					margin-bottom: 50px;
+					border-radius: 20px;
+										
+				}
+				.shopdiv {
+					width: 70%;
+					text-align: center;
+					vertical-align: center;
+					margin:0 auto;
+					border-radius: 20px;
+					background-color: white;
+				}
+				body {
+					width: fit-content;
+					min-width: 100%; /* because the content might only be a few words */
+					box-sizing: border-box; /* because 100% + padding > 100% */
+				}
+				a {
+					text-decoration: none;
+					color: black;
+				}
+
+				a:hover {
+					color: lightblue;
+					
+				}
+				.shoptable {
+					margin:0 auto;
+				}
+				table {
+					border-spacing: 30px;
+					min-width: 100%;
+					min-height: 100%;
+					border-radius: 20px;
+				}
+				td {
+					background-color: rgb(255, 213, 128);
+					border-radius: 20px;
+					box-shadow: 0 0 4px 2px gray;
+				}
+
+				
+		</style>
 	</body>
 </html>  

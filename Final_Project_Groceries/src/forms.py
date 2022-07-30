@@ -1,3 +1,6 @@
+from cgi import print_exception
+from curses import ALL_MOUSE_EVENTS
+from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField, PasswordField, SubmitField,
@@ -17,7 +20,7 @@ class LocationForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     name = StringField('Name',
-                       validators=[DataRequired(), Length(min=2, max=20)])
+                       validators=[DataRequired()])
 
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
@@ -39,3 +42,8 @@ class LoginForm(FlaskForm):
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class AddToCart(FlaskForm):
+    amount = IntegerField('amount', validators=[DataRequired()])
+    itemid = IntegerField('itemid ', validators=[DataRequired()])
+    submit = SubmitField("Add To Cart")

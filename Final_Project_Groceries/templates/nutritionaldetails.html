@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Go Grocery</title>
+	<link rel="icon" href="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}">
+</head>
+<body>
+    
+    <style>
+        h2 {
+            text-align: center;
+            margin:0 auto;
+            max-width: 100%;
+            border-bottom: 2px solid black;
+        }
+        div {
+            margin:0 auto;
+            border-radius: 20px;
+            background-color: white;
+            width: 30%;
+            margin-top: 40vh;
+        }
+        table {
+            margin:0 auto;
+        }
+        body {
+            background-color: lightgray;
+            height: 100%;
+        }
+        html {
+            height: 100%;
+        }
+        h4 {
+            margin: 0px;
+        }
+        table td + td { border-left:2px solid black; }
+
+    </style>
+    <div>
+        <h2> {{itemname}} </h2>
+        <table>
+            <tr>
+                <th> Label </th>
+                <th> Quantity </th>
+            </tr>
+            {% for x in nutritionlist %}
+                {% for label in x %}
+                    <tr>
+                        <td> <h4>{{label}} </h4></td>
+                        <td> <h4> {{x[label]}}</h4> </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
