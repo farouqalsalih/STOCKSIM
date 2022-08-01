@@ -66,21 +66,22 @@
 							</li>
 						</ul>
 					</div>
+					<script>
+						$(function() {
+							$("#li1").mouseenter(function() {
+								$(".popupMenu").fadeIn();
+							});
+							$("#container").mouseleave(function() {
+								$(".popupMenu").fadeOut();
+							});
+						});
+					</script>
+
 
 				</ul>
 			</nav>
 		</div> 
-
-		<script>
-			$(function() {
-				$("#li1").mouseenter(function() {
-					$(".popupMenu").fadeIn();
-				});
-				$("#container").mouseleave(function() {
-					$(".popupMenu").fadeOut();
-				});
-			});
-		</script>
+		
 		<!-- Header -->
 			<header id="header">
 				<h1 class = "title"> GO GO GROCERY </h1>
@@ -154,6 +155,7 @@
 		
 			<style>
 				.upperdiv {
+					height: 85%;
 					overflow: scroll;
 				}
 				.lowerdiv {

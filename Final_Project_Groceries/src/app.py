@@ -1,10 +1,9 @@
-from crypt import methods
-from telnetlib import LOGOUT
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user, login_user, LoginManager, login_required, logout_user
+from requests import delete
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm, LocationForm, AddToCart, StoreRegistration
+from forms import AddToInventory, RegistrationForm, LocationForm, AddToCart, StoreRegistration, AddToCart, DeleteFromInventory
 from forms import LoginForm
 from foodnutritionapi import get_nutrition_data
 from geocode import getgeolocation
@@ -241,7 +240,6 @@ def main():
 @app.route('/store/<storename>', methods=['GET', 'POST'])
 def storename(storename):
     form = AddToCart()
-    print(Store.query.filter_by(storename = storename).first())
     query = Inventory.query.filter_by(storeid = Store.query.filter_by(storename = storename).first().storeid).all()
     store = Store.query.filter_by(storename = storename).first()
 
@@ -280,9 +278,18 @@ def foodnutrition(foodname):
 
 @app.route('/mystore/<name>', methods=['GET', 'POST'])
 def profile(name):
+
+    #### add guard against repeat items
     registerstore = StoreRegistration()
+    additems = AddToInventory()
+    deleteform = DeleteFromInventory()
+
     user = User.query.filter_by(id = current_user.id).first()
     userscart = CartItems.query.filter_by(userid = user.id).all()
+
+    userstore = Store.query.filter_by(userid = current_user.id).first()
+    userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
+    
     #gets subtotal
     subtotal = 0
     itemamount = 0
@@ -295,15 +302,28 @@ def profile(name):
         geolocationdata = getgeolocation(registerstore.storeaddress.data)
         newstore = Store(storename = registerstore.storename.data, storeaddress = registerstore.storeaddress.data, 
                         storelat = geolocationdata['lat'], storelong = geolocationdata['lon'], storeowner = User.query.filter_by(id = current_user.id).first().name, userid = current_user.id)
+
         db.session.add(newstore)
         db.session.commit()
         return redirect('/mystore/' + name)
     
-    if Store.query.filter_by(userid = current_user.id).first() != None:
-         return 'gotta add this one'
-    else:
-        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount)
+    if additems.validate_on_submit():
+        newitem = Inventory(itemname = additems.itemname.data, price = additems.price.data, unit = additems.unit.data, storeid = Store.query.filter_by(userid = current_user.id).first().storeid)
+        db.session.add(newitem)
+        db.session.commit()
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
 
+    if deleteform.validate_on_submit():
+        item = Inventory.query.filter_by(inventoryid = deleteform.itemid.data).first()
+        db.session.delete(item)
+        db.session.commit()
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+
+    if Store.query.filter_by(userid = current_user.id).first() != None:
+         return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+    else:
+        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore)
+    
     
 
 @app.route("/logout")
