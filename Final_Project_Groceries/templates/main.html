@@ -6,90 +6,321 @@
 -->
 <html>
 	<head>
-		<title>Project Heatwave</title>
+		<title>Go Go Grocery</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<link href="https://use.fontawesome.com/releases/v5.0.1/css/all.css" rel="stylesheet">
+		<link rel="icon" href="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}">
+		<link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet'>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />
+		
+		<!--<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />-->
 	</head>
 	<body class="is-preload">
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
 
 		<div class="container">
 			<img class = 'logo' src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}"> 
 			<nav>
 				<ul id = 'subpages'>
-					<li><a href="home.html">HOME</a></li>
-					<li><a href="register.html">REGISTER</a></li>
-					<li><a href="login.html">LOGIN</a></li>
-					<li><a href="stocksearch.html">STOCK SEARCH</a> </li>
-					<li><a href="resources.html">RESOURCES</a></li>
-					{% if current_user.is_authenticated %}
-						<li class = 'specificli'> <a> YOU ARE CURRENTLY LOGGED IN AS: {{current_user.username}} </a> </li>
-						<li> <a href="/logout"> LOGOUT </a> </li>
-					{% endif %}
+					
+					<li><a href="/main">HOME</a></li>
+					<li><a href="/mystore/{{current_user.name}}">MY STORE</a></li>
+					<li id="logout"><a href="/logout">LOGOUT</a></li>
+					<!--<li> <a href="/cart"> <i class="fa badge fa-lg" style='font-size:30px'value=8>&#xf291; </i> </a> </li>-->
+					<div id="container" style="display:inline-block; position: absolute; height: 100%;">
+						<ul>
+							<li id="li1"> <i class="fa badge fa-lg" style='font-size:30px'value={{itemamount}}>&#xf291; </i>
+								<div class="popupMenu">
+									<div class = "upperdiv">
+										<h1 style="text-align: center; border-bottom: 2px solid black; padding-bottom: 20px;"> My Cart</h1>
+										<table class = "carttable">
+											{% for thing in cart %}
+												<tr>
+													<td>
+														<div class = 'itemdiv'>
+															<img src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}" class="itemimage">
+															<table class="carttdtable">
+																<tr class="carttr">
+																	
+																	<td class="carttd">
+																	<h4 class = "iteminfo" style = "margin: 0px;"> {{thing.itemname}} {{thing.price}} {{thing.unit}}</h4> <br> <h5 class = "iteminfo" style = "margin: 0px;"> {{thing.seller}} </h5> <br> <h5 class = "iteminfo" style = "margin: 0px;"> Quantity: {{thing.quantity}} </h5> </td>
+																	</td>
+																</tr>
+																
+															</table>
+														</div>
+													</td>
+												</tr>
+											{% endfor %}
+										</table>
+									</div>
+									<div class="lowerdiv">
+										<h3> Subtotal (for {{itemamount}} things) ${{"%.2f"|format(subtotal)}} </h3>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<script>
+						$(function() {
+							$("#li1").mouseenter(function() {
+								$(".popupMenu").fadeIn();
+							});
+							$("#container").mouseleave(function() {
+								$(".popupMenu").fadeOut();
+							});
+						});
+					</script>
+
+
 				</ul>
 			</nav>
 		</div> 
-		<style>
-			.logo {
-				float: left;
-				height: 80px;
-				width: auto;
-				margin: 10px;
-			}
-			body {
-				height: 100%;
-				width: 100%;
-			}
-			html {
-				height: 100%;
-				width: 100%;
-			}
-			nav ul {
-				float: left;
-				list-style: none;
-				text-align: right;
-				padding-top: 20px;
-				margin-left: 0px;
-			}
-			.container {
-				background-color: lightblue;
-				position: fixed;
-				width: 100%;
-				top: 0px;
-				left: 0px;
-			}
-			.container::after {
-				content: '';
-				display: table;
-				clear: both;
-			}
-			nav li {
-				float: left;
-				margin-left: 14px;
-
-			}
-			nav a {
-				text-decoration: none;
-				color: black;
-				font-size: 21px;
-			}
-		</style>
+		
 		<!-- Header -->
 			<header id="header">
-				<h1> GO GO GROCERY </h1>
+				<h1 class = "title"> GO GO GROCERY </h1>
 			</header>
 
 			<div class = "shopdiv">
-				{% for store in stores %}
-					<h3> <a href="/store/{{store.storename}}"> {{ store.storename }} {{ store.storeaddress }} </a> </h3>
-				{% endfor %}
+				<table class = 'shoptable'>
+				
+					{% for store in sorted %}
+						<tr>
+							{% if allinfo[store]['userid'] == current_user.id %}
+								<td class="stores" style="background-color: lightblue;"> <h4> <a href="/store/{{store}}"> {{ store }} <br> {{ allinfo[store]['storeaddress'] }} <br> {{ "%.2f"|format(allinfo[store]['distfromuser']) }} Miles away </a> </h4> </td>
+							{% else %}
+								<td class="stores"> <h4> <a href="/store/{{store}}"> {{ store }} <br> {{ allinfo[store]['storeaddress'] }} <br> {{ "%.2f"|format(allinfo[store]['distfromuser']) }} Miles away </a> </h4> </td>
+							{% endif %}
+							</tr>
+						
+					{% endfor %}
+				</table>
 			</div>
-			<h1><a href="/mystore/{{current_user.name}}">HOME {{current_user.name}}</a></h1>
 
+			<div id="map"></div>
 
+			<script>
+				function initMap() {
+					var options = {
+						zoom: 4,
+						center: {
+							lat: 37.0902,
+							lng: -95.7129
+						},
+					};
+					var map = new google.maps.Map(document.getElementById('map'), options);
+					var marker = new google.maps.Marker({
+						position: {
+							lat: {{current_user.userlat}},
+							lng: {{current_user.userlong}}
+						},
+						icon: {
+							url: "http://maps.google.com/mapfiles/ms/icons/white-dot.png"
+						},
+						map: map,
+						label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: 'Your Location' }
+					});
+					{% for store in sorted %}
+						var marker = new google.maps.Marker({
+							position: {
+								lat: {{allinfo[store]['storelat']}},
+								lng: {{allinfo[store]['storelong']}}
+							},
+							{% if allinfo[store]['userid'] == current_user.id %}
+								icon: {
+									url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+								},
+							{% endif %}
+							map: map,
+							label: { color: '#000000', fontWeight: 'bold', fontSize: '14px', text: '{{store}}' }
+						});
+					{% endfor %}
+					
+						
+			
+				}
+			
+		
+			</script>
+			<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhEW2rxsV3KkJ9CHVq7BdhuTx6ax3fBWM&callback=initMap">
+			</script>
 		<!-- Scripts -->
 			<script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
 		
-     
+			<style>
+				.upperdiv {
+					height: 85%;
+					overflow: scroll;
+				}
+				.lowerdiv {
+					border-top: 2px solid black;
+					position: absolute;
+					bottom: 0px;
+					text-align: center;
+					width: 100%;
+				}
+				.carttable {
+					margin: 0 auto;
+					width: 80%;
+				}
+				.itemimage {
+					height: 90px;
+					width: 90px;
+					float: left;
+					border-radius: 20px;
+					margin-right: 10px;
+				}
+				#logout {
+					margin-right: 10vh;
+				}
+				#container {
+					right: -80px;
+					top: 16px;
+					margin-right: 5vh;
+				}
+				.popupMenu {
+					width: 350px;
+					height: 450px;
+					border: 1px solid black;
+					position: absolute;
+					top: 62px;
+					right: -20px;
+					background-color: white;
+					border-radius: 20px;
+					overflow: scroll;
+				}
+				ul li {
+					position: relative
+				}
+				
+				.badge:after{
+					content:attr(value);
+					font-size:12px;
+					color: #fff;
+					background: red;
+					border-radius:50%;
+					padding: 2px 5px;
+					position:relative;
+					left:-8px;
+					top:-15px;
+					opacity:0.9;
+				}
+				.logo {
+					float: left;
+					height: 80px;
+					width: auto;
+					margin: 10px;
+					border-radius: 20px;
+				}
+				body {
+					height: 100%;
+					width: 100%;
+					font-family: Eina, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				}
+				html {
+					height: 100%;
+					width: 100%;
+				}
+				nav ul {
+					float: right;
+					list-style: none;
+					text-align: right;
+					padding-top: 20px;
+					margin-left: 0px;
+					margin-right: 5vh;
+				}
+				.container {
+					background-color:rgb(193, 225, 193);
+					position: fixed;
+					width: 100%;
+					top: 0px;
+					left: 0px;
+				}
+				.container::after {
+					content: '';
+					display: table;
+					clear: both;
+				}
+				nav li {
+					float: left;
+					margin-right: 3vh;
+
+				}
+				nav a {
+					text-decoration: none;
+					color: black;
+					font-size: 21px;
+				}
+				.title {
+					top: 0px;
+					height: 440px;
+					width: 100%;
+					text-align: center;
+					background-image: url("../static/images/h1image.jpg");
+					line-height: 30vh;
+					margin-bottom: 150px;
+					border-radius: 20px;
+										
+				}
+				.shopdiv {
+					width: 70%;
+					text-align: center;
+					vertical-align: center;
+					margin:0 auto;
+					border-radius: 20px;
+					background-color: white;
+				}
+				body {
+					width: fit-content;
+					min-width: 100%; /* because the content might only be a few words */
+					box-sizing: border-box; /* because 100% + padding > 100% */
+					font-family: Eina, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				}
+				a {
+					text-decoration: none;
+					color: black;
+				}
+
+				a:hover {
+					color: white;
+					
+				}
+				.shoptable {
+					border-spacing: 30px;
+					min-width: 100%;
+					min-height: 100%;
+					border-radius: 20px;
+					margin:0 auto;
+				}
+				.stores {
+					background-color: rgb(255, 213, 128);
+					border-radius: 20px;
+					box-shadow: 0 0 4px 2px gray;
+				}
+				#map {
+					height: 60vh;
+					width: 80%;
+					margin:0 auto;
+					border-radius: 20px;
+					box-shadow: 0 0 8px 4px gray;
+					margin-top: 200px;
+				}
+				.iteminfo {
+					text-align: center;
+				}
+				.itemdiv {
+					background-color: rgb(255, 213, 128);
+					border-radius: 20px;
+					box-shadow: 0 0 4px 2px gray;
+				}
+
+				
+		</style>
 	</body>
 </html>  

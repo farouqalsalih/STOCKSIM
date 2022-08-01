@@ -9,33 +9,6 @@
     - TODO: generalize so that it does NOT load submit buttons
             IF already nested in another form
 -->
-<form method="post" action="{{ parent }}">
-    {{ loc_form.hidden_tag() }}
-    <div class="fields">
-    <!-- City (required) -->
-        <div class="field">
-            {{ loc_form.city.label(for="city") }}
-            {% if loc_form.city.errors %} 
-                {{ loc_form.city() }}
-                <div>
-                    {% for error in loc_form.city.errors%}
-                        <span>{{error}}</span>
-                    {% endfor %}
-                </div>
-        {% else %}
-            {{ loc_form.city() }}
-        {% endif %}
-        </div>
-    </div>
 
-<!-- 
-    Only load submit buttons if not already in another form
- -->
-    {% if parent_html != "register.html" %}
-        <ul class="actions special">
-            <li><input type="submit" value="Enter" class="primary" /></li>
-        </ul>
-    {% endif %}
-</form>
 
 {% endblock location_form %}

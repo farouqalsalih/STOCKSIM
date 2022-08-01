@@ -1,12 +1,14 @@
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required
+from flask_login import UserMixin, current_user, login_user, LoginManager, login_required, logout_user
+from requests import delete
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm, LocationForm
+from forms import AddToInventory, RegistrationForm, LocationForm, AddToCart, StoreRegistration, AddToCart, DeleteFromInventory
 from forms import LoginForm
-from weather import Weather
-
-
+from foodnutritionapi import get_nutrition_data
+from geocode import getgeolocation
+import haversine as hs 
+from haversine import Unit
 app = Flask(__name__,
             static_folder='../static',
             template_folder='../templates')
@@ -14,8 +16,8 @@ app.config['SECRET_KEY'] = 'c2883c6f3a75f4135a2d0361c1ae3cb2'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
-city = "New York"
 
+#pip install haversine
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -24,18 +26,21 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     address = db.Column(db.String(200), nullable=False)
+    userlat = db.Column(db.Float, nullable = False)
+    userlong = db.Column(db.Float, nullable = False)
 
     cart = db.relationship("CartItems")
+
 
 
 class CartItems(db.Model):
     __tablename__ = 'cart'
     itemid = db.Column(db.Integer, primary_key = True)
-    itemname = db.Column(db.String, nullable = False)
-    quanitity = db.Column(db.Integer, nullable = False)
-    unit = db.Column(db.String(6), nullable = False)
+    itemname = db.Column(db.String(20), nullable = False)
+    quantity = db.Column(db.Integer, nullable = False)
+    unit = db.Column(db.String(10), nullable = False)
     price = db.Column(db.Float, nullable = False)
-    seller = db.Column(db.String(20), nullable = False)
+    seller = db.Column(db.String(100), nullable = False)
 
     userid = db.Column(db.Integer, db.ForeignKey("user.id"))
 
@@ -43,19 +48,21 @@ class CartItems(db.Model):
 class Store(db.Model):
     __tablename__ = 'store'
     storeid = db.Column(db.Integer, primary_key = True)
-    storename = db.Column(db.String(50), nullable = False)
-    storeaddress = db.Column(db.String(100), nullable = False)
-    storelat = db.Column(db.Float, nullable = False)
-    storelong = db.Column(db.Float, nullable = False)
+    storename = db.Column(db.String(50), nullable = True)
+    storeaddress = db.Column(db.String(100), nullable = True)
+    storelat = db.Column(db.Float, nullable = True)
+    storelong = db.Column(db.Float, nullable = True)
+    storeowner = db.Column(db.String(20), nullable = True)
 
     cart = db.relationship("Inventory")
+    userid = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 class Inventory(db.Model):
     __tablename__ = 'inventory'
     inventoryid = db.Column(db.Integer, primary_key = True)
     itemname = db.Column(db.String(20), nullable = False)
     price = db.Column(db.Float, nullable = False)
-    unit = db.Column(db.String(5), nullable = False)
+    unit = db.Column(db.String(10), nullable = False)
 
     storeid = db.Column(db.Integer, db.ForeignKey("store.storeid"))
 
@@ -111,11 +118,6 @@ def home():
     parent = "/home"
     home_loc_form = LocationForm()
 
-    if home_loc_form.validate_on_submit():
-        global city
-        city = home_loc_form.city.data
-        return redirect(url_for('main'))
-
     return render_template('location-form.html',
                            parent_html=parent_html, parent=parent,
                            loc_form=home_loc_form)
@@ -136,10 +138,11 @@ def register():
             flash("User already exist")
             return redirect(url_for('login'))
         password = request.form.get('password')
+        geolocationdata = getgeolocation(reg_form.address.data)
         user = User(name=reg_form.name.data,
                     email=reg_form.email.data,
                     address=reg_form.address.data,
-                    password=generate_password_hash(password, method='sha256'))
+                    password=generate_password_hash(password, method='sha256'), userlat = geolocationdata['lat'], userlong = geolocationdata['lon'])
         print(user)
 
         db.session.add(user)
@@ -200,26 +203,139 @@ def login():
 # weather Stuff
 @app.route('/main', methods=['GET', 'POST'])
 def main():
-
+    #TODO hard code locations when needed
     #hardcode_locations()
     store = get_locations()
+    user = User.query.filter_by(id = current_user.id).first()
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
 
-    return render_template('main.html', stores = store)
+    allinfo = {}
+    distdict = {}
+    for x in store:
+        dist = hs.haversine((x.storelat, x.storelong), (user.userlat, user.userlong), unit=Unit.MILES)
+        allinfo[x.storename] = {'storename' : x.storename, 'storeid' : x.storeid, 'storelat' : x.storelat, 
+                                'storelong' : x.storelong, 'userid' : x.userid, 'distfromuser' : dist, 'storeaddress' : x.storeaddress}
+        distdict[x.storename] = dist
 
-@app.route('/mystore/<name>')
-def profile(name):
-    return 'hi' + name
+    #this is a weird process that sorts the stores by how far they are so they can be put on the website in that order.
+    sorted_values = sorted(distdict.values())
+    sorted_dict = {}
+    for i in sorted_values:
+        for k in distdict.keys():
+            if distdict[k] == i:
+                sorted_dict[k] = distdict[k]
+                break
+    print(sorted_dict)
+
+    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount)
 
 
-@app.route('/store/<storename>')
+
+@app.route('/store/<storename>', methods=['GET', 'POST'])
 def storename(storename):
+    form = AddToCart()
     query = Inventory.query.filter_by(storeid = Store.query.filter_by(storename = storename).first().storeid).all()
     store = Store.query.filter_by(storename = storename).first()
-    print(query)
-    return render_template('shop.html', shopinventory = query, store = store)
+
+
+    user = User.query.filter_by(id = current_user.id).first()
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
+
+
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            find = Inventory.query.filter_by(inventoryid = form.itemid.data).first()
+            print(find)
+            if CartItems.query.filter_by(itemname = find.itemname , userid = current_user.id, seller = storename).first() == None:
+                newitem = CartItems(itemname = find.itemname, quantity = form.amount.data, unit = find.unit, price = find.price, seller = Store.query.filter_by(storeid = find.storeid).first().storename, userid = current_user.id)
+                db.session.add(newitem)
+                db.session.commit()
+            else:
+                olditem = CartItems.query.filter_by(itemname = find.itemname , userid = current_user.id).first()
+                olditem.quantity = olditem.quantity + form.amount.data
+                db.session.commit()
+        return redirect('/store/' + storename)
+            
+    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount)
+
+# this is to show the nutritional details for each food
+@app.route('/nutritionaldetails/<foodname>', methods=['GET', 'POST'])
+def foodnutrition(foodname):
+    nutritionlist = get_nutrition_data(foodname)
+    return render_template('nutritionaldetails.html', itemname = foodname, nutritionlist = nutritionlist)
+
+@app.route('/mystore/<name>', methods=['GET', 'POST'])
+def profile(name):
+
+    #### add guard against repeat items
+    registerstore = StoreRegistration()
+    additems = AddToInventory()
+    deleteform = DeleteFromInventory()
+
+    user = User.query.filter_by(id = current_user.id).first()
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+
+
+    userstore = Store.query.filter_by(userid = current_user.id).first()
+    userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
+    
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
+
+
+    if registerstore.validate_on_submit():
+        geolocationdata = getgeolocation(registerstore.storeaddress.data)
+        newstore = Store(storename = registerstore.storename.data, storeaddress = registerstore.storeaddress.data, 
+                        storelat = geolocationdata['lat'], storelong = geolocationdata['lon'], storeowner = User.query.filter_by(id = current_user.id).first().name, userid = current_user.id)
+
+        db.session.add(newstore)
+        db.session.commit()
+        return redirect('/mystore/' + name)
+    
+    if additems.validate_on_submit():
+        newitem = Inventory(itemname = additems.itemname.data, price = additems.price.data, unit = additems.unit.data, storeid = Store.query.filter_by(userid = current_user.id).first().storeid)
+        db.session.add(newitem)
+        db.session.commit()
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+
+
+    if deleteform.validate_on_submit():
+        item = Inventory.query.filter_by(inventoryid = deleteform.itemid.data).first()
+        db.session.delete(item)
+        db.session.commit()
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+
+    if Store.query.filter_by(userid = current_user.id).first() != None:
+         return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+    else:
+        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore)
+    
+    
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("/")
+
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host = "0.0.0.0")
 
-
+# TODO set host = "0.0.0.0" instead of port 0
 # TODO add logout

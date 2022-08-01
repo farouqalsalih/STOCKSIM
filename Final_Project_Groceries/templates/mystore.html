@@ -14,9 +14,10 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
+		<!--<link rel="stylesheet" href="{{ url_for('static', filename='main_assets/css/main.css') }}" />-->
 	</head>
 	<body class="is-preload">
-        <br>
+		<br>
 		<br>
 		<br>
 		<br>
@@ -26,10 +27,12 @@
 			<img class = 'logo' src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}"> 
 			<nav>
 				<ul id = 'subpages'>
+					
 					<li><a href="/main">HOME</a></li>
 					<li><a href="/mystore/{{current_user.name}}">MY STORE</a></li>
 					<li id="logout"><a href="/logout">LOGOUT</a></li>
-                    <div id="container" style="display:inline-block; position: absolute; height: 100%;">
+					<!--<li> <a href="/cart"> <i class="fa badge fa-lg" style='font-size:30px'value=8>&#xf291; </i> </a> </li>-->
+					<div id="container" style="display:inline-block; position: absolute; height: 100%;">
 						<ul>
 							<li id="li1"> <i class="fa badge fa-lg" style='font-size:30px'value={{itemamount}}>&#xf291; </i>
 								<div class="popupMenu">
@@ -63,72 +66,97 @@
 							</li>
 						</ul>
 					</div>
-				</ul>
-			</nav>
-		</div> 
+                    <script>
+						$(function() {
+							$("#li1").mouseenter(function() {
+								$(".popupMenu").fadeIn();
+							});
+							$("#container").mouseleave(function() {
+								$(".popupMenu").fadeOut();
+							});
+						});
+					</script> 
+                </ul>   
+            </nav>
+        </div>
 
-        <script>
-			$(function() {
-				$("#li1").mouseenter(function() {
-					$(".popupMenu").fadeIn();
-				});
-				$("#container").mouseleave(function() {
-					$(".popupMenu").fadeOut();
-				});
-			});
-		</script>
 
-		<!-- Header -->
-		<h1 class = 'title'> {{store.storename}} {{store.storeaddress}} </h1>
+
+        <h1 class = 'title'> {{userstore.storename}} : {{userstore.storeaddress}} </h1>
+        <div class = "addtocart">
+            <form method="post" action="">
+                <fieldset>
+                    <legend class = "cartlegend">Add To Inventory</legend>
+                    <div>
+                        {{ form.itemname.label(class = "form-control-label") }}
+                        {{ form.itemname(class = "form-control form-control-lg") }}
+    
+                    </div>
+                    <div>
+                        {{ form.price.label(class = "form-control-label") }}
+                        {{ form.price(class = "form-control form-control-lg") }}
+    
+                    </div>
+                    <div>
+                        {{ form.unit.label(class = "form-control-label") }}
+                        {{ form.unit(class = "form-control form-control-lg") }}
+                    </div>
+                    
+                    <div class = 'fieldbutton'>
+                        {{ form.submit(class = "btn btn-outline-info") }}
+                        {{ form.csrf_token }}
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class = "addtocart">
+            <form method="post" action="">
+                <fieldset>
+                    <legend class = "cartlegend">Delete from Inventory</legend>
+                    <div>
+                        {{ form1.itemid.label(class = "form-control-label") }}
+                        {{ form1.itemid(class = "form-control form-control-lg") }}
+    
+                    </div>
+                    <div class = 'fieldbutton'>
+                        {{ form1.submit(class = "btn btn-outline-info") }}
+                        {{ form1.csrf_token }}
+                    </div>
+                </fieldset>
+            </form>
+        </div>
         <div class = 'tablediv'>
             <table class = "inventorytable">
-            {% for thing in shopinventory %}
-            <tr>
-                <td>
-                <div class = 'itemdiv'>
-                    <img src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}" class="itemimage">
+            {% for thing in userinv %}
+                <tr>
+                    <td>
+                    <div class = 'itemdiv'>
+                        <img src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}" class="itemimage">
 
-                    <table>
-                        <tr>
-                            <td> <h2 class = "iteminfo"> {{thing.itemname}} {{thing.price}} {{thing.unit}} <br> </h2> <h5> <a href="/nutritionaldetails/{{thing.itemname}}" target="_blank">Nutrition Details</a> </h5> </td>
-                            <td>
-                                <div class = "addtocart">
-                                    <form method="post" action="">
-                                        <fieldset>
-                                            <legend class = "cartlegend">Add To Cart</legend>
-                                            <div>
-                                                {{ form.amount.label(class = "form-control-label") }}
-                                                {{ form.amount(class = "form-control form-control-lg") }}
-                            
-                                            </div>
-                                            <div>
-                                                {{ form.itemid.label(class = "form-control-label") }}
-                                                {{ form.itemid(class = "form-control form-control-lg") }}
-                            
-                                            </div>
-                                        
-                                        </fieldset>
-                            
-                                        <div class = 'fieldbutton'>
-                                            {{ form.submit(class = "btn btn-outline-info") }}
-                                            {{ form.csrf_token }}
-                                        </div>
-                                    </form>
-                                </div>
-                            </td>
-                            <td>
-                                <h2>Item ID: {{thing.inventoryid}} </h2>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                </td>
-            </tr>
+                        <table>
+                            <tr>
+                                <td> <h2 class = "iteminfo"> {{thing.itemname}} {{thing.price}} {{thing.unit}} <br> </h2> <h5> <a href="/nutritionaldetails/{{thing.itemname}}" target="_blank">Nutrition Details</a> </h5> </td>
+
+                                <td>
+                                    <h2>Item ID: {{thing.inventoryid}} </h2>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    </td>
+                </tr>
             {% endfor %}
             </table>
         </div>
-        <script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
-        <style>
+
+		<!-- Scripts -->
+			<script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
+		
+			<style>
+            .addtocart {
+                width: 60%;
+                margin: 0 auto;
+            }
             .upperdiv {
                 height: 85%;
 				overflow: scroll;
@@ -168,6 +196,7 @@
                 right: -20px;
                 background-color: white;
                 border-radius: 20px;
+                overflow: scroll;
             }
             ul li {
                 position: relative
@@ -230,10 +259,7 @@
                 box-shadow: 0 0 4px 2px gray;
                 
             }
-            input{
-                background-color: rgb(255, 213, 128);
-                border: 2px solid black;
-            }
+            
             .inventorytable {
                 width: 70%;
                 margin:0 auto;
@@ -245,6 +271,8 @@
             }
             fieldset {
                 border: 2px solid black;
+                text-align: center;
+                margin-bottom: 3vh;
             }
             html{
                 height: 100%;
@@ -306,7 +334,6 @@
                 color: black;
                 font-size: 21px;
             }
-        </style>
-    
+		</style>
 	</body>
-</html> 
+</html>  
