@@ -287,6 +287,7 @@ def profile(name):
     user = User.query.filter_by(id = current_user.id).first()
     userscart = CartItems.query.filter_by(userid = user.id).all()
 
+
     userstore = Store.query.filter_by(userid = current_user.id).first()
     userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
     
@@ -312,6 +313,7 @@ def profile(name):
         db.session.add(newitem)
         db.session.commit()
         return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+
 
     if deleteform.validate_on_submit():
         item = Inventory.query.filter_by(inventoryid = deleteform.itemid.data).first()
