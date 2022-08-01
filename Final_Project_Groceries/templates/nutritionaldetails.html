@@ -8,7 +8,22 @@
 	<link rel="icon" href="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}">
 </head>
 <body>
-    
+    <br>
+		<br>
+		<br>
+		<br>
+		<br>
+
+		<div class="container">
+			<img class = 'logo' src="{{ url_for('static', filename = 'images/grocerylogo.jpeg') }}"> 
+			<nav>
+				<ul id = 'subpages'>
+					<li><a href="main.html">HOME</a></li>
+					<li><a href="/mystore/{{current_user.name}}">MY STORE</a></li>
+					<li><a href="/logout">LOGOUT</a></li>
+				</ul>
+			</nav>
+		</div> 
     <style>
         h2 {
             text-align: center;
@@ -21,7 +36,7 @@
             border-radius: 20px;
             background-color: white;
             width: 30%;
-            margin-top: 40vh;
+            margin-top: 25vh;
         }
         table {
             margin:0 auto;
@@ -29,6 +44,7 @@
         body {
             background-color: lightgray;
             height: 100%;
+			font-family: Eina, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         html {
             height: 100%;
@@ -37,6 +53,50 @@
             margin: 0px;
         }
         table td + td { border-left:2px solid black; }
+        .logo {
+					float: left;
+					height: 80px;
+					width: auto;
+					margin: 10px;
+				}
+				body {
+					height: 100%;
+					width: 100%;
+				}
+				html {
+					height: 100%;
+					width: 100%;
+				}
+				nav ul {
+					float: left;
+					list-style: none;
+					text-align: right;
+					padding-top: 20px;
+					margin-left: 0px;
+				}
+				.container {
+					background-color:rgb(193, 225, 193);
+					position: fixed;
+					width: 100%;
+					top: 0px;
+					left: 0px;
+                    margin-top: 0px;
+				}
+				.container::after {
+					content: '';
+					display: table;
+					clear: both;
+				}
+				nav li {
+					float: left;
+					margin-left: 14px;
+
+				}
+				nav a {
+					text-decoration: none;
+					color: black;
+					font-size: 21px;
+				}
 
     </style>
     <div>

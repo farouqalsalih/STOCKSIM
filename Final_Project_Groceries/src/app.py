@@ -1,9 +1,10 @@
+from crypt import methods
 from telnetlib import LOGOUT
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user, login_user, LoginManager, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm, LocationForm, AddToCart
+from forms import RegistrationForm, LocationForm, AddToCart, StoreRegistration
 from forms import LoginForm
 from foodnutritionapi import get_nutrition_data
 from geocode import getgeolocation
@@ -207,13 +208,33 @@ def main():
     #hardcode_locations()
     store = get_locations()
     user = User.query.filter_by(id = current_user.id).first()
-    distancelist = []
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
+
+    allinfo = {}
+    distdict = {}
     for x in store:
-        print(x.storename)
-        print(hs.haversine((x.storelat, x.storelong), (user.userlat, user.userlong), unit=Unit.MILES))
-        distancelist.append(hs.haversine((x.storelat, x.storelong), (user.userlat, user.userlong), unit=Unit.MILES))
-    #TODO find a way to tie this info together its being outputted wrong but it works!
-    return render_template('main.html', stores = store, distancelist = distancelist)
+        dist = hs.haversine((x.storelat, x.storelong), (user.userlat, user.userlong), unit=Unit.MILES)
+        allinfo[x.storename] = {'storename' : x.storename, 'storeid' : x.storeid, 'storelat' : x.storelat, 
+                                'storelong' : x.storelong, 'userid' : x.userid, 'distfromuser' : dist, 'storeaddress' : x.storeaddress}
+        distdict[x.storename] = dist
+
+    #this is a weird process that sorts the stores by how far they are so they can be put on the website in that order.
+    sorted_values = sorted(distdict.values())
+    sorted_dict = {}
+    for i in sorted_values:
+        for k in distdict.keys():
+            if distdict[k] == i:
+                sorted_dict[k] = distdict[k]
+                break
+    print(sorted_dict)
+
+    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount)
 
 
 
@@ -223,7 +244,17 @@ def storename(storename):
     print(Store.query.filter_by(storename = storename).first())
     query = Inventory.query.filter_by(storeid = Store.query.filter_by(storename = storename).first().storeid).all()
     store = Store.query.filter_by(storename = storename).first()
-    print(query)
+
+
+    user = User.query.filter_by(id = current_user.id).first()
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
+
 
     if form.validate_on_submit():
         if current_user.is_authenticated:
@@ -237,9 +268,9 @@ def storename(storename):
                 olditem = CartItems.query.filter_by(itemname = find.itemname , userid = current_user.id).first()
                 olditem.quantity = olditem.quantity + form.amount.data
                 db.session.commit()
-
+        return redirect('/store/' + storename)
             
-    return render_template('shop.html', shopinventory = query, store = store, form = form)
+    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount)
 
 # this is to show the nutritional details for each food
 @app.route('/nutritionaldetails/<foodname>', methods=['GET', 'POST'])
@@ -247,15 +278,38 @@ def foodnutrition(foodname):
     nutritionlist = get_nutrition_data(foodname)
     return render_template('nutritionaldetails.html', itemname = foodname, nutritionlist = nutritionlist)
 
-@app.route('/mystore/<name>')
+@app.route('/mystore/<name>', methods=['GET', 'POST'])
 def profile(name):
-    geolocationdata = get_nutrition_data()
-    return 'hi' + name
+    registerstore = StoreRegistration()
+    user = User.query.filter_by(id = current_user.id).first()
+    userscart = CartItems.query.filter_by(userid = user.id).all()
+    #gets subtotal
+    subtotal = 0
+    itemamount = 0
+    for thing in userscart:
+        itemamount += thing.quantity
+        subtotal += thing.price * thing.quantity
+
+
+    if registerstore.validate_on_submit():
+        geolocationdata = getgeolocation(registerstore.storeaddress.data)
+        newstore = Store(storename = registerstore.storename.data, storeaddress = registerstore.storeaddress.data, 
+                        storelat = geolocationdata['lat'], storelong = geolocationdata['lon'], storeowner = User.query.filter_by(id = current_user.id).first().name, userid = current_user.id)
+        db.session.add(newstore)
+        db.session.commit()
+        return redirect('/mystore/' + name)
+    
+    if Store.query.filter_by(userid = current_user.id).first() != None:
+         return 'gotta add this one'
+    else:
+        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount)
+
+    
 
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("/"))
+    return redirect("/")
 
 
 if __name__ == "__main__":

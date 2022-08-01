@@ -47,3 +47,9 @@ class AddToCart(FlaskForm):
     amount = IntegerField('amount', validators=[DataRequired()])
     itemid = IntegerField('itemid ', validators=[DataRequired()])
     submit = SubmitField("Add To Cart")
+
+class StoreRegistration(FlaskForm):
+    storename = StringField('Store Name', validators=[DataRequired()])
+    storeaddress = StringField('Store Address', validators=[DataRequired()])
+    submit = SubmitField("Register your Store")
+

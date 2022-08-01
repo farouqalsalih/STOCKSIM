@@ -9,5 +9,3 @@ def getphoto(searchtext):
     )   
     r = r.json()
     return r["output_url"]
-
-print(getphoto("apple"))
