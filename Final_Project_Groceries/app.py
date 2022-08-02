@@ -2,7 +2,6 @@ from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user, login_user, LoginManager, login_required, logout_user
 from requests import delete
-from werkzeug.security import generate_password_hash, check_password_hash
 from forms import AddToInventory, RegistrationForm, LocationForm, AddToCart, StoreRegistration, AddToCart, DeleteFromInventory
 from forms import LoginForm
 from foodnutritionapi import get_nutrition_data
@@ -24,7 +23,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(200), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     #had to take off string limit for password since its being hashed and is going over the limit
-    password = db.Column(db.String(256), nullable=False)
+    password = db.Column(db.String, nullable=False)
     address = db.Column(db.String(200), nullable=False)
     userlat = db.Column(db.Float, nullable = False)
     userlong = db.Column(db.Float, nullable = False)
@@ -142,7 +141,7 @@ def register():
         user = User(name=reg_form.name.data,
                     email=reg_form.email.data,
                     address=reg_form.address.data,
-                    password=generate_password_hash(password, method='sha256'), userlat = geolocationdata['lat'], userlong = geolocationdata['lon'])
+                    password=password, userlat = geolocationdata['lat'], userlong = geolocationdata['lon'])
         print(user)
 
         db.session.add(user)
@@ -184,7 +183,7 @@ def login():
         # the hashed password in the database
         if user:
             # check the password
-            if check_password_hash(user.password, password):
+            if user.password ==  password:
                 # login_user(user)
                 # want this to flash with the users Name
                 flash("Log in Successful")
