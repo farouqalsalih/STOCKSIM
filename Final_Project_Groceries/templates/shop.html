@@ -107,31 +107,33 @@
                     <table>
                         <tr>
                             <td> <h2 class = "iteminfo"> {{thing.itemname}} {{thing.price}} {{thing.unit}} <br> </h2> <h5> <a href="/nutritionaldetails/{{thing.itemname}}" target="_blank">Nutrition Details</a> </h5> </td>
-                            <td>
-                                <div class = "addtocart">
-                                    <form method="post" action="">
-                                        <fieldset>
-                                            <legend class = "cartlegend">Add To Cart</legend>
-                                            <div>
-                                                {{ form.amount.label(class = "form-control-label") }}
-                                                {{ form.amount(class = "form-control form-control-lg") }}
-                            
+                            {% if store.userid != current_user.id %}
+                                <td>
+                                    <div class = "addtocart">
+                                        <form method="post" action="">
+                                            <fieldset>
+                                                <legend class = "cartlegend">Add To Cart</legend>
+                                                <div>
+                                                    {{ form.amount.label(class = "form-control-label") }}
+                                                    {{ form.amount(class = "form-control form-control-lg") }}
+                                
+                                                </div>
+                                                <div>
+                                                    {{ form.itemid.label(class = "form-control-label") }}
+                                                    {{ form.itemid(class = "form-control form-control-lg") }}
+                                
+                                                </div>
+                                            
+                                            </fieldset>
+                                
+                                            <div class = 'fieldbutton'>
+                                                {{ form.submit(class = "btn btn-outline-info") }}
+                                                {{ form.csrf_token }}
                                             </div>
-                                            <div>
-                                                {{ form.itemid.label(class = "form-control-label") }}
-                                                {{ form.itemid(class = "form-control form-control-lg") }}
-                            
-                                            </div>
-                                        
-                                        </fieldset>
-                            
-                                        <div class = 'fieldbutton'>
-                                            {{ form.submit(class = "btn btn-outline-info") }}
-                                            {{ form.csrf_token }}
-                                        </div>
-                                    </form>
-                                </div>
-                            </td>
+                                        </form>
+                                    </div>
+                                </td>
+                            {% endif %}
                             <td>
                                 <h2>Item ID: {{thing.inventoryid}} </h2>
                             </td>
