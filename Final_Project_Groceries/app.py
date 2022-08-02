@@ -11,8 +11,9 @@ from haversine import Unit
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c2883c6f3a75f4135a2d0361c1ae3cb2'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://tgoygfmxitwakz:a63d1a34f4d9e2132533261226f8a54c64347c769568f59e0f93c84b138edf94@ec2-44-206-197-71.compute-1.amazonaws.com:5432/d165b8mm1r84p0'
-# sqlite:///site.db
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://tgoygfmxitwakz:a63d1a34f4d9e2132533261226f8a54c64347c769568f59e0f93c84b138edf94@ec2-44-206-197-71.compute-1.amazonaws.com:5432/d165b8mm1r84p0'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
 db = SQLAlchemy(app)
 
 #pip install haversine
