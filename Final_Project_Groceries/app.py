@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(200), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     #had to take off string limit for password since its being hashed and is going over the limit
-    password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     userlat = db.Column(db.Float, nullable = False)
     userlong = db.Column(db.Float, nullable = False)
