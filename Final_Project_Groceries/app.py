@@ -9,9 +9,7 @@ from foodnutritionapi import get_nutrition_data
 from geocode import getgeolocation
 import haversine as hs 
 from haversine import Unit
-app = Flask(__name__,
-            static_folder='../static',
-            template_folder='../templates')
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'c2883c6f3a75f4135a2d0361c1ae3cb2'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
