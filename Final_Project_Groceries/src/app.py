@@ -205,6 +205,14 @@ def login():
 def main():
     #TODO hard code locations when needed
     #hardcode_locations()
+    deletefromcart = DeleteFromInventory()
+
+    if deletefromcart.validate_on_submit():
+        item = CartItems.query.filter_by(itemid = deletefromcart.itemid.data).first()
+        db.session.delete(item)
+        db.session.commit()
+        return redirect('/main')
+
     store = get_locations()
     user = User.query.filter_by(id = current_user.id).first()
     userscart = CartItems.query.filter_by(userid = user.id).all()
@@ -233,12 +241,14 @@ def main():
                 break
     print(sorted_dict)
 
-    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount)
+    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
 
 
 
 @app.route('/store/<storename>', methods=['GET', 'POST'])
 def storename(storename):
+    deletefromcart = DeleteFromInventory()
+
     form = AddToCart()
     query = Inventory.query.filter_by(storeid = Store.query.filter_by(storename = storename).first().storeid).all()
     store = Store.query.filter_by(storename = storename).first()
@@ -267,8 +277,15 @@ def storename(storename):
                 olditem.quantity = olditem.quantity + form.amount.data
                 db.session.commit()
         return redirect('/store/' + storename)
+    
+    if deletefromcart.validate_on_submit():
+        print('touched')
+        item = CartItems.query.filter_by(itemid = deletefromcart.itemid.data).first()
+        db.session.delete(item)
+        db.session.commit()
+        return redirect('/store/' + storename)
             
-    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount)
+    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
 
 # this is to show the nutritional details for each food
 @app.route('/nutritionaldetails/<foodname>', methods=['GET', 'POST'])
@@ -280,6 +297,8 @@ def foodnutrition(foodname):
 def profile(name):
 
     #### add guard against repeat items
+    deletefromcart = DeleteFromInventory()
+   
     registerstore = StoreRegistration()
     additems = AddToInventory()
     deleteform = DeleteFromInventory()
@@ -287,8 +306,6 @@ def profile(name):
     user = User.query.filter_by(id = current_user.id).first()
     userscart = CartItems.query.filter_by(userid = user.id).all()
 
-    userstore = Store.query.filter_by(userid = current_user.id).first()
-    userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
     
     #gets subtotal
     subtotal = 0
@@ -308,21 +325,31 @@ def profile(name):
         return redirect('/mystore/' + name)
     
     if additems.validate_on_submit():
-        newitem = Inventory(itemname = additems.itemname.data, price = additems.price.data, unit = additems.unit.data, storeid = Store.query.filter_by(userid = current_user.id).first().storeid)
-        db.session.add(newitem)
-        db.session.commit()
-        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+        if Inventory.query.filter_by(itemname = additems.itemname.data).all() == []:
+            newitem = Inventory(itemname = additems.itemname.data, price = additems.price.data, unit = additems.unit.data, storeid = Store.query.filter_by(userid = current_user.id).first().storeid)
+            db.session.add(newitem)
+            db.session.commit()
+            return redirect('/mystore/' + name)
 
     if deleteform.validate_on_submit():
         item = Inventory.query.filter_by(inventoryid = deleteform.itemid.data).first()
         db.session.delete(item)
         db.session.commit()
-        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+        return redirect('/mystore/' + name)
+    
+    if deletefromcart.validate_on_submit():
+        item = CartItems.query.filter_by(itemid = deletefromcart.itemid.data).first()
+        db.session.delete(item)
+        db.session.commit()
+        return redirect('/mystore/' + name)
+        
 
     if Store.query.filter_by(userid = current_user.id).first() != None:
-         return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform)
+        userstore = Store.query.filter_by(userid = current_user.id).first()
+        userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform, deleteform = deletefromcart)
     else:
-        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore)
+        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
     
     
 
@@ -333,7 +360,7 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host = "0.0.0.0")
+    app.run(debug=True, port=0)
 
 # TODO set host = "0.0.0.0" instead of port 0
 # TODO add logout

@@ -47,6 +47,7 @@
 																	<td class="carttd">
 																	<h4 class = "iteminfo" style = "margin: 0px;"> {{thing.itemname}} {{thing.price}} {{thing.unit}}</h4> <br> <h5 class = "iteminfo" style = "margin: 0px;"> {{thing.seller}} </h5> <br> <h5 class = "iteminfo" style = "margin: 0px;"> Quantity: {{thing.quantity}} </h5> </td>
 																	</td>
+																	<td> <h4> ID: {{thing.itemid}}</h5></td>
 																</tr>
 																
 															</table>
@@ -57,7 +58,22 @@
 										</table>
 									</div>
 									<div class="lowerdiv">
-										<h3> Subtotal (for {{itemamount}} things) ${{"%.2f"|format(subtotal)}} </h3>
+										<h3 class="lowerh3"> Subtotal (for {{itemamount}} things) ${{"%.2f"|format(subtotal)}} </h3>
+                                        <br>
+                                        <form method="post" action="">
+											<fieldset>
+												<legend class = "cartlegend">Delete from Cart</legend>
+												<div>
+													{{ deleteform.itemid.label(class = "form-control-label") }}
+													{{ deleteform.itemid(class = "form-control form-control-lg") }}
+								
+												</div>
+												<div class = 'fieldbutton'>
+													{{ deleteform.submit(class = "btn btn-outline-info") }}
+													{{ deleteform.csrf_token }}
+												</div>
+											</fieldset>
+										</form>
 									</div>
 								</div>
 							</li>
@@ -129,10 +145,18 @@
         </div>
         <script src="{{ url_for('static', filename='main_assets/js/main.js') }} "></script>
         <style>
-            .upperdiv {
-                height: 85%;
-				overflow: scroll;
-            }
+            .lowerform {
+					margin-top: 0px;
+					margin-bottom: 10px;
+				}
+				.lowerh3 {
+					margin-top: 10px;
+					margin-bottom: 0px;
+				}
+				.upperdiv {
+					height: 73%;
+					overflow: scroll;
+				}
             .lowerdiv {
                 border-top: 2px solid black;
                 position: absolute;
@@ -160,15 +184,16 @@
                 margin-right: 5vh;
             }
             .popupMenu {
-                width: 350px;
-                height: 450px;
-                border: 1px solid black;
-                position: absolute;
-                top: 62px;
-                right: -20px;
-                background-color: white;
-                border-radius: 20px;
-            }
+					width: 400px;
+					height: 500px;
+					border: 1px solid black;
+					position: absolute;
+					top: 62px;
+					right: -20px;
+					background-color: white;
+					border-radius: 20px;
+					overflow: scroll;
+			}
             ul li {
                 position: relative
             }
