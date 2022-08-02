@@ -305,10 +305,6 @@ def profile(name):
     user = User.query.filter_by(id = current_user.id).first()
     userscart = CartItems.query.filter_by(userid = user.id).all()
 
-
-    userstore = Store.query.filter_by(userid = current_user.id).first()
-    userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
-    
     #gets subtotal
     subtotal = 0
     itemamount = 0
