@@ -63,6 +63,15 @@
 									<div class="lowerdiv">
 										<h3 class="lowerh3"> Subtotal (for {{itemamount}} things) ${{"%.2f"|format(subtotal)}} </h3>
                                         <br>
+                                        <form method="post" action="">
+											<fieldset>
+												<div>
+													{{ emailform.submit(class = "btn btn-outline-info") }}
+													{{ emailform.csrf_token }}
+												</div>
+											</fieldset>
+										</form>
+										
                                         <form method="post" action="" class="lowerform">
 											<fieldset>
 												<legend class = "cartlegend">Delete from Cart</legend>
@@ -179,7 +188,7 @@
 					margin-bottom: 0px;
 				}
 				.upperdiv {
-					height: 73%;
+					height: 65%;
 					overflow: scroll;
 				}
             .addtocart {

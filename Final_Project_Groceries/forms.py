@@ -63,3 +63,5 @@ class DeleteFromInventory(FlaskForm):
     itemid = IntegerField("Item ID", validators=[DataRequired()])
     submit = SubmitField("Remove Items")
 
+class EmailForm(FlaskForm):
+    submit = SubmitField("Complete Order")

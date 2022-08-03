@@ -65,6 +65,15 @@
                                         <br>
                                         <form method="post" action="">
 											<fieldset>
+												<div>
+													{{ emailform.submit(class = "btn btn-outline-info") }}
+													{{ emailform.csrf_token }}
+												</div>
+											</fieldset>
+										</form>
+										
+                                        <form method="post" action="">
+											<fieldset>
 												<legend class = "cartlegend">Delete from Cart</legend>
 												<div>
 													{{ deleteform.itemid.label(class = "form-control-label") }}
@@ -144,7 +153,7 @@
 					margin-bottom: 0px;
 				}
 				.upperdiv {
-					height: 73%;
+					height: 65%;
 					overflow: scroll;
 				}
             h1 {

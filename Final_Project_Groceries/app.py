@@ -1,13 +1,16 @@
+import email
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user, login_user, LoginManager, login_required, logout_user
 from requests import delete
-from forms import AddToInventory, RegistrationForm, LocationForm, AddToCart, StoreRegistration, AddToCart, DeleteFromInventory
+from forms import AddToInventory, RegistrationForm, LocationForm, AddToCart, StoreRegistration, AddToCart, DeleteFromInventory, EmailForm
 from forms import LoginForm
 from foodnutritionapi import get_nutrition_data
 from geocode import getgeolocation
 import haversine as hs 
 from haversine import Unit
+from emailcustomers import sendemailconfirmation
+
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'c2883c6f3a75f4135a2d0361c1ae3cb2'
@@ -68,49 +71,25 @@ class Inventory(db.Model):
     storeid = db.Column(db.Integer, db.ForeignKey("store.storeid"))
 
 
-def hardcode_locations():
-    store1 = Store(storename = 'King Washington Grocery', storeaddress = '4225 Broadway, New York, NY 10033', storelat = 40.84918770614993, storelong = -73.93705621361732)
-    
-
-
-    store2 = Store(storename = 'Fine Fare Supermarkets', storeaddress = '4211 Broadway #17, New York, NY 10033', storelat = 40.84900104583396, storelong = -73.93820755183697)
-
-
-    #store3 = Store(storename = 'La Parada Grocery', storeaddress = '706 W 177th St, New York, NY 10033', storelat = 40.84756226696742, storelong = -73.9385180265269)
-
-    '''
-    store4 = Store(storename = 'Rayira Grocery Deli corp.', storeaddress = '247 Audubon Ave, New York, NY 10033', storelat = 40.846230498563706, storelong = -73.93399715423584)
-
-    store5 = Store(storename = 'Xcellente Supermarket', storeaddress = '1568 St Nicholas Ave, New York, NY 10040', storelat = 40.853881431557106, storelong = -73.93019378185272)
-
-    store6 = Store(storename = 'Shop Fair Supermarket', storeaddress = '3871 Broadway, New York, NY 10032', storelat = 40.83692757377343, storelong = -73.94313197102434)
-    '''
-    db.session.add(store1)
-    db.session.add(store2)
-    #db.session.add(store3)
-    '''
-    db.session.add(store4)
-    db.session.add(store5)
-    db.session.add(store6)
-    '''
-    db.session.commit()
-
-    store1inv1 = Inventory(itemname = "Apple", price = .99, unit = 'per', storeid = store1.storeid)
-    store1inv2 = Inventory(itemname = "Pineapple", price = 4.99, unit = 'per', storeid = store1.storeid)
-    db.session.add(store1inv1)
-    db.session.add(store1inv2)
-
-    store2inv1 = Inventory(itemname = "Grape", price = .25, unit = 'per', storeid = store2.storeid)
-    store2inv2 = Inventory(itemname = "Cantelope", price = 3.99, unit = 'per', storeid = store2.storeid)
-    db.session.add(store2inv1)
-    db.session.add(store2inv2)
-
-    db.session.commit()
-
 db.create_all()
+
 def get_locations():
     query = Store.query.all()
     return query
+
+def sendemail(id):
+    items = CartItems.query.filter_by(userid = current_user.id).all()
+    useremail = User.query.filter_by(id = current_user.id).first().email
+    emailtext = "Hello " + User.query.filter_by(id = current_user.id).first().name + ",\n\nThis is a an order confirmation notice concerning your order of:\n"
+    for item in items:
+        emailtext += "\n"+str(item.quantity)+" "+item.itemname+" at "+str(item.price) + " "+item.unit + " from " + item.seller
+        db.session.delete(item)
+        db.session.commit()
+
+    emailtext += "\n\nThanks for using Go Go Grocery!\nHave a nice day!"
+    print(emailtext)
+    sendemailconfirmation(useremail, emailtext)
+    
 
 @app.route('/')
 @app.route('/home', methods=['GET', 'POST'])
@@ -204,6 +183,7 @@ def login():
 # weather Stuff
 @app.route('/main', methods=['GET', 'POST'])
 def main():
+    emailform = EmailForm()
     #TODO hard code locations when needed
     #hardcode_locations()
     deletefromcart = DeleteFromInventory()
@@ -212,6 +192,10 @@ def main():
         item = CartItems.query.filter_by(itemid = deletefromcart.itemid.data).first()
         db.session.delete(item)
         db.session.commit()
+        return redirect('/main')
+
+    if emailform.validate_on_submit():
+        sendemail(current_user.id)
         return redirect('/main')
 
     store = get_locations()
@@ -242,12 +226,13 @@ def main():
                 break
     print(sorted_dict)
 
-    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
+    return render_template('main.html', stores = store, allinfo = allinfo, sorted = sorted_dict, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart, emailform = emailform)
 
 
 
 @app.route('/store/<storename>', methods=['GET', 'POST'])
 def storename(storename):
+    emailform = EmailForm()
     deletefromcart = DeleteFromInventory()
 
     form = AddToCart()
@@ -285,8 +270,12 @@ def storename(storename):
         db.session.delete(item)
         db.session.commit()
         return redirect('/store/' + storename)
+
+    if emailform.validate_on_submit():
+        sendemail(current_user.id)
+        return redirect('/store/' + storename)
             
-    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
+    return render_template('shop.html', shopinventory = query, store = store, form = form, cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart, emailform = emailform)
 
 # this is to show the nutritional details for each food
 @app.route('/nutritionaldetails/<foodname>', methods=['GET', 'POST'])
@@ -296,7 +285,7 @@ def foodnutrition(foodname):
 
 @app.route('/mystore/<name>', methods=['GET', 'POST'])
 def profile(name):
-
+    emailform = EmailForm()
     #### add guard against repeat items
     deletefromcart = DeleteFromInventory()
    
@@ -343,13 +332,17 @@ def profile(name):
         db.session.commit()
         return redirect('/mystore/' + name)
         
+    if emailform.validate_on_submit():
+        sendemail(current_user.id)
+        return redirect('/mystore/' + name)
+        
 
     if Store.query.filter_by(userid = current_user.id).first() != None:
         userstore = Store.query.filter_by(userid = current_user.id).first()
         userinv = Inventory.query.filter_by(storeid = Store.query.filter_by(storeid = userstore.storeid).first().storeid).all()
-        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform, deleteform = deletefromcart)
+        return render_template('mystore.html', form = additems, cart = userscart, subtotal = subtotal, itemamount = itemamount, userinv = userinv, userstore = userstore, form1 = deleteform, deleteform = deletefromcart, emailform = emailform)
     else:
-        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart)
+        return render_template('registerforshop.html', form = registerstore,  cart = userscart, subtotal = subtotal, itemamount = itemamount, deleteform = deletefromcart, emailform = emailform)
     
     
 
