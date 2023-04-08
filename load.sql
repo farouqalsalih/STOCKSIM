@@ -24,3 +24,12 @@ CREATE TABLE MARKET (
     PRIMARY KEY (order_id),
     FOREIGN KEY (ticker) REFERENCES DIVIDEND(ticker)
 );
+
+CREATE TABLE LEADERBOARD (
+    leaderboard_id INT NOT NULL, 
+    rank INT NOT NULL, 
+    total INT NOT NULL, 
+    PRIMARY KEY (leaderboard_id)
+);
+
+
