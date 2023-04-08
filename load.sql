@@ -35,4 +35,13 @@ CREATE TABLE STATS (
     FOREIGN KEY (user_id) REFERENCES USERS(user_id)
 );
 
+CREATE TABLE PORTFOLIOS (
+    user_id INT NOT NULL, 
+    ticker VARCHAR(50) NOT NULL, 
+    shares INT NOT NULL,
+    PRIMARY KEY (user_id, ticker),
+    FOREIGN KEY (user_id) REFERENCES USERS(user_id),
+    FOREIGN KEY (ticker) REFERENCES DIVIDENDS(ticker)
+);
+
 
