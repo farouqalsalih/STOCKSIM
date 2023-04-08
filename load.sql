@@ -7,3 +7,10 @@ CREATE TABLE USER (
     PRIMARY KEY (user_id)
 );
 
+CREATE TABLE DIVIDEND (
+    ticker VARCHAR(50) NOT NULL,
+    payout FLOAT(0) NOT NULL,
+    payment_date Date NOT NULL, 
+    PRIMARY KEY (ticker)
+);
+
