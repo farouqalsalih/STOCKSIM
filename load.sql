@@ -23,4 +23,4 @@ CREATE TABLE MARKET (
     price FLOAT(0) NOT NULL, 
     PRIMARY KEY (order_id),
     FOREIGN KEY (ticker) REFERENCES DIVIDEND(ticker)
-)
+);
