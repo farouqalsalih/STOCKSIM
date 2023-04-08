@@ -10,7 +10,17 @@ CREATE TABLE USER (
 CREATE TABLE DIVIDEND (
     ticker VARCHAR(50) NOT NULL,
     payout FLOAT(0) NOT NULL,
-    payment_date Date NOT NULL, 
+    payment_date DATE NOT NULL, 
     PRIMARY KEY (ticker)
 );
 
+CREATE TABLE MARKET (
+    order_id INT NOT NULL, 
+    quantity_executed INT NOT NULL,
+    ticker VARCHAR(50) NOT NULL, 
+    buy BOOL NOT NULL, 
+    shares INT NOT NULL, 
+    price FLOAT(0) NOT NULL, 
+    PRIMARY KEY (order_id),
+    FOREIGN KEY (ticker) REFERENCES DIVIDEND(ticker)
+)
