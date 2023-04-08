@@ -1,4 +1,4 @@
-CREATE TABLE USER (
+CREATE TABLE USERS (
     user_id INT NOT NULL,
     email VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
@@ -7,14 +7,14 @@ CREATE TABLE USER (
     PRIMARY KEY (user_id)
 );
 
-CREATE TABLE DIVIDEND (
+CREATE TABLE DIVIDENDS (
     ticker VARCHAR(50) NOT NULL,
     payout FLOAT(0) NOT NULL,
     payment_date DATE NOT NULL, 
-    PRIMARY KEY (ticker)
+    PRIMARY KEY (ticker, payment_date)
 );
 
-CREATE TABLE MARKET (
+CREATE TABLE ORDERS (
     order_id INT NOT NULL, 
     quantity_executed INT NOT NULL,
     ticker VARCHAR(50) NOT NULL, 
@@ -22,14 +22,17 @@ CREATE TABLE MARKET (
     shares INT NOT NULL, 
     price FLOAT(0) NOT NULL, 
     PRIMARY KEY (order_id),
-    FOREIGN KEY (ticker) REFERENCES DIVIDEND(ticker)
+    FOREIGN KEY (ticker) REFERENCES DIVIDENDS(ticker)
 );
 
-CREATE TABLE LEADERBOARD (
-    leaderboard_id INT NOT NULL, 
+CREATE TABLE STATS (
+    user_id INT NOT NULL, 
+    instance_date DATE NOT NULL,
     rank INT NOT NULL, 
-    total INT NOT NULL, 
-    PRIMARY KEY (leaderboard_id)
+    total_users INT NOT NULL,
+    portfolio_value FLOAT(0) NOT NULL,
+    PRIMARY KEY (user_id, instance_date),
+    FOREIGN KEY (user_id) REFERENCES USERS(user_id)
 );
 
 
