@@ -5,6 +5,7 @@ CREATE TABLE USERS (
     last_name VARCHAR(50) NOT NULL, 
     cash float(0) NOT NULL, 
     phone_number VARCHAR(20) NOT NULL,
+    user_password VARCHAR(20) NOT NULL
     PRIMARY KEY (user_id)
 );
 
