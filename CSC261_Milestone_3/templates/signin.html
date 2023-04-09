@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 4</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename ='main.css') }}">
+</head>
+<body>
+    <div class="navbar"> 
+        <img class = 'stocklogo' src="{{ url_for('static', filename = 'stocklogo.png') }}">
+        <nav>
+            <ul id = 'subpages'>
+                <li style="left:200px;"><a href="/">REGISTER</a></li>
+                <li><a href="signin.html">LOG IN</a></li>
+                <li><a href="home.html">HOME</a></li>
+                <li><a href="portfolio.html">ACCOUNT</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class = "centerdiv">
+
+    
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    {%block content%}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="form-group">
+                    {{ form.username.label(class="form-control-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors%}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                        {% for error in form.password.errors%}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                    {{ form.csrf_token }}
+                </div>
+            </fieldset>    
+
+            
+        </form>
+    </div>
+    {%endblock content%}
+    
+</body>
+</html>

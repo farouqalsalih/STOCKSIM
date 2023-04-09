@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=, initial-scale=1.0">
+        <title>Home Page</title>
+        <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link href="{{ url_for('static', filename ='main.css') }}" rel="stylesheet" />
+        <title>Document</title>
+    </head>
+    
+    <body>
+        <div class="navbar"> 
+            <img class = 'stocklogo' src="{{ url_for('static', filename = 'stocklogo.png') }}">
+            <nav>
+                <ul id = 'subpages'>
+                    <li style="left:200px;"><a href="/">REGISTER</a></li>
+                    <li><a href="signin.html">LOG IN</a></li>
+                    <li><a href="home.html">HOME</a></li>
+                    <li><a href="portfolio.html">ACCOUNT</a></li>
+                </ul>
+            </nav>
+        </div> 
+        <br><br><br><br><br><br><br><br><br><br>
+
+        <div class = "bodydiv">
+            
+            <div>
+                <h1 class="markettitle">Market</h1> <img class = 'usflag' src="{{ url_for('static', filename = 'usflag.png') }}"> <h1 class="usatext">United States</h1> 
+                <br>
+                <br>
+                <br>
+                <div class="firstbreak"></div>
+            </div>
+          
+
+               
+
+            <Table class = "markettable">
+                <tr>
+                    {% for index in majorindexes %}
+                        {% for ticker in index %}
+                            <td class = "markettd">
+                                {% if ticker == "^DJI" %}
+                                    <div>
+                                        <table class = "indexinfotable">
+                                            <tr>
+                                                <td class = "lhsitd"> <h1>DOW JONES</h1> </td>
+                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    
+                                    </div>
+                                {% elif ticker == "^GSPC" %}
+                                    <div>
+                                        <table class = "indexinfotable">
+                                            <tr>
+                                                <td class = "lhsitd"> <h1>S&P 500</h1> </td>
+                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    </div>
+                                {% elif ticker == "^IXIC" %}
+                                    <div>
+                                        <table class = "indexinfotable">
+                                            <tr>
+                                                <td class = "lhsitd"> <h1>NASDAQ</h1> </td>
+                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    
+                                    </div>
+                                {% endif %}
+                                <br>
+                                
+
+                                <canvas class = "indexchartcanvas" id="{{ticker}}" width="350" height="150"></canvas>
+                                {% if index[ticker]['Trend'] == "Up" %}
+                                    <script>
+                                        var canvas = document.getElementById("{{ticker}}");
+                                        var ctx = canvas.getContext("2d");
+                    
+                                        var lineChart = new Chart(ctx, {
+                                            type: 'line',
+                                            data: {
+                                                labels: {{ index[ticker]['Date'] | safe }},
+                                                datasets: [
+                                                    {
+                                                    label: 'DataPoints',
+                                                    pointRadius: [0],
+                                                    data: {{ index[ticker]['Close'] | safe }},
+                                                    fill: true,
+                                                    backgroundColor: "rgba(57,255,20,.7)",
+                                                    borderColor: "rgba(0,204,0,.7)",
+                                                    lineTension: 0.1
+                                                    }
+                                                ]
+                                            },
+                                            options: {
+                                                responsive:false,
+                                                scales: {
+                                                    x: {
+                                                        display: false,
+                                                    },
+                                                    y: {
+                                                        display: false,
+                                                    },
+                                                },
+                                                plugins: {
+                                                    legend: {
+                                                        display: false
+                                                    },
+                                                },
+                                            }
+                                        });
+                                    </script>
+                                {% else %}
+                                    <script>
+                                        var canvas = document.getElementById("{{ticker}}");
+                                        var ctx = canvas.getContext("2d");
+                    
+                                        var lineChart = new Chart(ctx, {
+                                            type: 'line',
+                                            data: {
+                                                labels: {{ index[ticker]['Date'] | safe }},
+                                                datasets: [
+                                                    {
+                                                    label: 'DataPoints',
+                                                    pointRadius: [0],
+                                                    data: {{ index[ticker]['Close'] | safe }},
+                                                    fill: true,
+                                                    backgroundColor: "rgba(255, 49, 49, .7)",
+                                                    borderColor: "rgba(139,0,0,.7)",
+                                                    lineTension: 0.1
+                                                    }
+                                                ]
+                                            },
+                                            options: {
+                                                responsive:false,
+                                                scales: {
+                                                    x: {
+                                                        display: false,
+                                                    },
+                                                    y: {
+                                                        display: false,
+                                                    },
+                                                },
+                                                plugins: {
+                                                    legend: {
+                                                        display: false
+                                                    },
+                                                },
+                                            }
+                                        });
+                                    </script>
+                                {% endif %}       
+    
+                            </td>
+                        
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                    
+            </Table> 
+           
+            <h1 class="popularstocktitle">Popular Stock</h1>
+            <div class="secondbreak"></div>
+            
+
+            <div>
+
+                <table class = "popularstocktable">
+                    <head>
+                        
+                            <td class = "popularstocktabletd"> <h2> Ticker </h2> </td>
+                            <td class = "popularstocktabletd"> <h2> Market Cap </h2> </td>
+                            <td class = "popularstocktabletd"> <h2> Volume </h2> </td>
+                            <td class = "popularstocktabletd"> <h2>  Week High </h2> </td>
+                            <td class = "popularstocktabletd"> <h2> Week Low </h2> </td>
+                        
+                    </head>
+                    <body>
+                    
+                            {% for stock in stocklists %}
+                                {% for ticker in stock %}
+                                    <tr>
+                                        <td class = "popularstocktd">
+                                            
+                                            <h2 class = "popularstockticker"> {{ticker}} </h2>
+                                        
+                                    
+                                            <canvas id="{{ticker}}" width="100" height="50" class = "popularstockcanvas"></canvas>
+                                            {% if stock[ticker]['Trend'] == "Up" %}
+                                                <script>
+                                                    var canvas = document.getElementById("{{ticker}}");
+                                                    var ctx = canvas.getContext("2d");
+                                
+                                                    var lineChart = new Chart(ctx, {
+                                                        type: 'line',
+                                                        data: {
+                                                            labels: {{ stock[ticker]['Date'] | safe }},
+                                                            datasets: [
+                                                                {
+                                                                label: 'DataPoints',
+                                                                pointRadius: [0],
+                                                                data: {{ stock[ticker]['Close'] | safe }},
+                                                                fill: true,
+                                                                backgroundColor: "rgba(57,255,20,.7)",
+                                                                borderColor: "rgba(0,204,0,.7)",
+                                                                lineTension: 0.1
+                                                                }
+                                                            ]
+                                                        },
+                                                        options: {
+                                                            responsive:false,
+                                                            scales: {
+                                                                x: {
+                                                                    display: false,
+                                                                },
+                                                                y: {
+                                                                    display: false,
+                                                                },
+                                                            },
+                                                            plugins: {
+                                                                legend: {
+                                                                    display: false
+                                                                },
+                                                            },
+                                                        }
+                                                    });
+                                                </script>
+                                            {% else %}
+                                                <script>
+                                                    var canvas = document.getElementById("{{ticker}}");
+                                                    var ctx = canvas.getContext("2d");
+                                
+                                                    var lineChart = new Chart(ctx, {
+                                                        type: 'line',
+                                                        data: {
+                                                            labels: {{ stock[ticker]['Date'] | safe }},
+                                                            datasets: [
+                                                                {
+                                                                label: 'DataPoints',
+                                                                pointRadius: [0],
+                                                                data: {{ stock[ticker]['Close'] | safe }},
+                                                                fill: true,
+                                                                backgroundColor: "rgba(255, 49, 49, .7)",
+                                                                borderColor: "rgba(139,0,0,.7)",
+                                                                lineTension: 0.1
+                                                                }
+                                                            ]
+                                                        },
+                                                        options: {
+                                                            responsive:false,
+                                                            scales: {
+                                                                x: {
+                                                                    display: false,
+                                                                },
+                                                                y: {
+                                                                    display: false,
+                                                                },
+                                                            },
+                                                            plugins: {
+                                                                legend: {
+                                                                    display: false
+                                                                },
+                                                            },
+                                                        }
+                                                    });
+                                                </script>
+                                            {% endif %}       
+                                        
+                                        </td>
+                                        <td class = "popularstocktd">
+                                            <h5> <b>{{ "$%.2f"|format(stock[ticker]['Close'][stock[ticker]['Close'] |length  - 1]) }}</b> </h5>
+                                        
+                                        </td>
+                                        <td class = "popularstocktd">
+                                            {% if stock[ticker]['Trend'] == "Up" %}
+                                            <b> <h5 class = 'greenmessage'> +{{ "$%.2f"|format(stock[ticker]['PriceChange']) }}</h5> <h5 class = "greenmessage"> +{{ "%.2f"|format(stock[ticker]['PercentChange']) }}% </h5> </b>
+                                            {% else %}
+                                            <b> <h5 class = 'redmessage'> {{ "$%.2f"|format(stock[ticker]['PriceChange']) }}</h5> <h5 class = "redmessage"> {{ "%.2f"|format(stock[ticker]['PercentChange']) }}% </h5> </b>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                    </body>
+                </table>
+            </div>
+            </div>
+        </div>
+
+    </body>
+
+
+</html>

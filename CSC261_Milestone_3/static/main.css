@@ -1,0 +1,218 @@
+body, html {
+  height: 100%;
+  width: 100%;
+}
+
+.markettable {
+  position: relative;
+  left: 5%;
+  width: 90%;
+  height: 30%;
+  border-spacing: 30px;
+  border-collapse: separate;
+
+}
+.popularstocktable {
+  position: relative;
+  left: 5%;
+  width: 90%;
+  height: auto;
+  border: 3px solid;
+  border-collapse: collapse;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  
+}
+
+.markettd {
+  border: 3px solid;
+  width: 30%;
+  padding-bottom: 20px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.markettickers {
+  padding: 30px;
+}
+
+body {
+  font-size: 14px;
+}
+
+.navbar {
+  z-index: 1;
+  width: 100%;
+  height: 96px;
+  background: rgba(97,174,251,1);
+  opacity: 1;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  margin-bottom: 50px;
+  position: fixed;
+}
+.navbar::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+nav li {
+  float: left;
+  margin-left: 14px;
+
+}
+nav a {
+  text-decoration: none;
+  color: black;
+  font-size: 21px;
+}
+nav ul {
+  float: left;
+  list-style: none;
+  text-align: right;
+  padding-top: 20px;
+  margin-left: 0px;
+}
+
+.markettitle {
+  color: rgba(0,0,0,1);
+  position: relative;
+  font-family: Inter;
+  font-weight: bold;
+  font-size: 40px;
+  text-align: left;
+  margin: 0;
+  margin-right: 20px;
+  float: left;
+  width: fit-content;
+}
+.popularstocktitle {
+  width: 289px;
+  color: rgba(0,0,0,1);
+  position: relative;
+  font-family: Inter;
+  font-weight: bold;
+  font-size: 40px;
+  opacity: 1;
+  text-align: left;
+}
+
+.stocklogo {
+  width: 70px;
+  height: 63px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  
+}
+
+
+.firstbreak {
+  width: 100%;
+  background: url("../images/v18_30.png");
+  opacity: 1;
+  position: relative;
+  border: 4px solid rgba(0,0,0,1);
+}
+.secondbreak {
+  width: 100%;
+  background: url("../images/v18_41.png");
+  opacity: 1;
+  position: relative;
+  border: 4px solid rgba(0,0,0,1);
+  margin-bottom: 20px;
+}
+.usflag {
+  width: 75px;
+  height: 45px;
+  position: relative;
+  float: left;
+  margin-right: 10px;
+  border-radius: 5px;
+ 
+}
+.usatext {
+  width: 167px;
+  color: rgba(0,0,0,1);
+  position: relative;
+  font-family: Inter;
+  font-weight: bold;
+  font-size: 24px;
+  opacity: 1;
+  text-align: left;
+  float: left;
+}
+.indexchartcanvas {
+  margin-bottom: 50px;
+  border-left: 4px solid black;
+  margin: 0 auto;
+}
+.lhsitd {
+  width: 80%;
+}
+.rhsitd {
+  width: 20%;
+  height: 50%;
+  
+}
+.indexinfotable {
+  width: 100%;
+  padding: 10px;
+}
+.bodydiv {
+  width: 90%;
+  margin: 0 auto;
+}
+.popularstocktabletd {
+  background-color: lightgray;
+  text-align: center;
+  
+}
+.popularstockcanvas {
+  float: left;
+  top: 50%;
+  vertical-align:middle;
+  border-left: 2px solid black;
+  margin: 0 auto;
+}
+.popularstockticker {
+  top: 50%;
+  width: 30%;
+  float: left;
+  margin: 0 auto;
+  line-height: 50px;
+}
+.popularstocktabletd {
+  text-align: center;
+  display: table-cell;
+}
+.popularstocktd {
+  text-align: center;
+  margin: 0 auto;
+}
+#subpages {
+  margin-left: 60px;
+}
+form {
+  top: 50%;
+  margin: auto;
+  vertical-align: middle;
+  
+}
+.centerdiv {
+  display: table;
+  background-color: lightgray;
+  margin-right: auto;
+  margin-left: auto;
+  width: 30%;
+  height: 30%;
+  margin-top: 20%;
+  vertical-align: middle;
+
+  
+}
+
