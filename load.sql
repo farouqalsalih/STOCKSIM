@@ -24,7 +24,7 @@ CREATE TABLE ORDERS (
     shares INT NOT NULL, 
     price FLOAT(0) NOT NULL, 
     executed INT NOT NULL,
-    order_date DATETIME NOT NULL,
+    order_date DATETIME NOT NULL CURRENT_TIMESTAMP,
     PRIMARY KEY (order_id),
     FOREIGN KEY (ticker) REFERENCES DIVIDENDS(ticker),
     FOREIGN KEY (user_id) REFERENCES USERS(user_id)
@@ -51,14 +51,14 @@ CREATE TABLE PORTFOLIOS (
 
 
 DELIMITER //
-CREATE TRIGGER check_and_update_funds_before_buy_order
+CREATE TRIGGER check_and_update_funds_and_assets_before_order
 BEFORE INSERT ON ORDERS
 FOR EACH ROW
 BEGIN
     IF NEW.buy = 1 THEN
         DECLARE user_cash FLOAT;
         SELECT cash INTO user_cash FROM USERS WHERE user_id = NEW.user_id;
-        
+
         IF user_cash < (NEW.shares * NEW.price) THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient funds for buy order';
         ELSE
@@ -66,8 +66,20 @@ BEGIN
             SET cash = cash - (NEW.shares * NEW.price)
             WHERE user_id = NEW.user_id;
         END IF;
+    ELSEIF NEW.buy = 0 THEN
+        DECLARE user_shares INT;
+        SELECT shares INTO user_shares FROM PORTFOLIOS WHERE user_id = NEW.user_id AND ticker = NEW.ticker;
+
+        IF user_shares < NEW.shares THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient assets for sell order';
+        ELSE
+            UPDATE PORTFOLIOS
+            SET shares = shares - NEW.shares
+            WHERE user_id = NEW.user_id AND ticker = NEW.ticker;
+        END IF;
     END IF;
 END;
 //
 DELIMITER ;
+
 
