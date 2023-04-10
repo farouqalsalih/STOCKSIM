@@ -12,15 +12,14 @@ def get_database_connection():
 def signUp(user_id, email, first, last, cash, phone, user_password):    
     connection = get_database_connection()
     cursor = connection.cursor()
-    success
+    success = True
 
     try:
         cursor.execute(f"INSERT INTO USERS (user_id, email, first_name, last_name, cash, phone_number, user_password) VALUES ({str(user_id)}, '{email}', '{first}', '{last}', {str(cash)}, '{phone}', '{user_password}');")
         connection.commit()
-        success = False
     except mysql.connector.Error as e:
         print(f"Error: {e}")
-        success = True
+        success = False
     finally:
         cursor.close()
         connection.close()
@@ -79,6 +78,43 @@ def cancel_order(order_id):
     connection.close()
 
     return True
+
+def show_live_orders(user_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT order_id, ticker, buy, shares, price, executed, cancelled, order_date
+        FROM ORDERS
+        WHERE user_id = %s AND executed < shares AND cancelled = 0
+        ORDER BY order_date DESC
+    """, (user_id,))
+
+    live_orders = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return live_orders
+
+
+def show_historical_orders(user_id):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT order_id, ticker, buy, shares, price, executed, cancelled, order_date
+        FROM ORDERS
+        WHERE user_id = %s AND (executed = shares OR cancelled = 1)
+        ORDER BY order_date DESC
+    """, (user_id,))
+
+    historical_orders = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return historical_orders
 
 
 def createOrder(user_id, ticker, buy, shares, price):
