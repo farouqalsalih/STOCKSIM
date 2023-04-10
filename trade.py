@@ -26,57 +26,59 @@ def signUp(user_id, email, first, last, cash, phone, user_password):
         connection.close()
         return success
 
-def cancel_order(user_id, order_id):
+def cancel_order(order_id):
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    # Fetch order information
+    # Fetch the order details
     cursor.execute("""
-        SELECT ticker, shares, price, executed, buy, cancelled
+        SELECT user_id, ticker, buy, shares, price, executed, cancelled
         FROM ORDERS
-        WHERE order_id = %s AND user_id = %s
-    """, (order_id, user_id))
+        WHERE order_id = %s
+    """, (order_id,))
 
-    order = cursor.fetchone()
+    order_details = cursor.fetchone()
 
-    if not order:
-        print("Error: Order not found.")
-        return
+    if not order_details:
+        print("Error: Order not found")
+        return False
 
-    ticker, shares, price, executed, buy, cancelled = order
-
-    if not buy:
-        print("Error: This is not a buy order.")
-        return
+    user_id, ticker, buy, shares, price, executed, cancelled = order_details
 
     if cancelled:
-        print("Error: The order is already cancelled.")
-        return
-
-    # Calculate the remaining cash for the unexecuted shares
-    remaining_shares = shares - executed
-    refund_amount = remaining_shares * price
-
-    # Update the order status to cancelled
+        return True
+    
+    # Update the order as cancelled
     cursor.execute("""
         UPDATE ORDERS
         SET cancelled = 1
         WHERE order_id = %s
     """, (order_id,))
 
-    # Refund the cash amount back to the user
-    cursor.execute("""
-        UPDATE USERS
-        SET cash = cash + %s
-        WHERE user_id = %s
-    """, (refund_amount, user_id))
+    # Refund the user's cash for buy orders that haven't been fully executed
+    if buy and executed < shares:
+        refund_amount = (shares - executed) * price
+        cursor.execute("""
+            UPDATE USERS
+            SET cash = cash + %s
+            WHERE user_id = %s
+        """, (refund_amount, user_id))
+
+    # Update the user's portfolio for sell orders that haven't been fully executed
+    if not buy and executed < shares:
+        cursor.execute("""
+            UPDATE PORTFOLIOS
+            SET shares = shares + %s
+            WHERE user_id = %s AND ticker = %s
+        """, (shares - executed, user_id, ticker))
 
     # Commit the changes to the database
     connection.commit()
 
     cursor.close()
     connection.close()
-    print(f"Buy order {order_id} has been cancelled successfully.")
+
+    return True
 
 
 def createOrder(user_id, ticker, buy, shares, price):
