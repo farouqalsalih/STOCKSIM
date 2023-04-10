@@ -25,6 +25,7 @@ CREATE TABLE ORDERS (
     price FLOAT(0) NOT NULL, 
     executed INT NOT NULL,
     order_date DATETIME NOT NULL CURRENT_TIMESTAMP,
+    cancelled BOOL NOT NULL,
     PRIMARY KEY (order_id),
     FOREIGN KEY (ticker) REFERENCES DIVIDENDS(ticker),
     FOREIGN KEY (user_id) REFERENCES USERS(user_id)
@@ -55,6 +56,16 @@ CREATE TRIGGER check_and_update_funds_and_assets_before_order
 BEFORE INSERT ON ORDERS
 FOR EACH ROW
 BEGIN
+    IF NEW.shares <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Shares value must be greater than 0.';
+    END IF;
+
+    IF NEW.price < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Price value must be equal to or greater than 0.';
+    END IF;
+
     IF NEW.buy = 1 THEN
         DECLARE user_cash FLOAT;
         SELECT cash INTO user_cash FROM USERS WHERE user_id = NEW.user_id;
@@ -83,3 +94,14 @@ END;
 DELIMITER ;
 
 
+DELIMITER //
+CREATE TRIGGER remove_zero_shares_after_update
+AFTER UPDATE ON PORTFOLIOS
+FOR EACH ROW
+BEGIN
+    IF NEW.shares = 0 THEN
+        DELETE FROM PORTFOLIOS WHERE user_id = NEW.user_id AND ticker = NEW.ticker;
+    END IF;
+END;
+//
+DELIMITER ;
