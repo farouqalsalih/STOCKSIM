@@ -5,7 +5,7 @@ def get_database_connection():
         host='Farouqs-MacBook-Air.local',
         database='stocksim',
         user='root',
-        password='Fifoking2!$!',
+        password='your_password',
         autocommit=False
     )
 
