@@ -24,7 +24,7 @@ CREATE TABLE ORDERS (
     shares INT NOT NULL, 
     price FLOAT(0) NOT NULL, 
     executed INT NOT NULL,
-    order_date DATETIME NOT NULL CURRENT_TIMESTAMP,
+    order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cancelled BOOL NOT NULL,
     PRIMARY KEY (order_id),
     FOREIGN KEY (ticker) REFERENCES DIVIDENDS(ticker),
@@ -56,6 +56,9 @@ CREATE TRIGGER check_and_update_funds_and_assets_before_order
 BEFORE INSERT ON ORDERS
 FOR EACH ROW
 BEGIN
+    DECLARE user_cash FLOAT;
+    DECLARE user_shares INT;
+
     IF NEW.shares <= 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error: Shares value must be greater than 0.';
@@ -67,7 +70,6 @@ BEGIN
     END IF;
 
     IF NEW.buy = 1 THEN
-        DECLARE user_cash FLOAT;
         SELECT cash INTO user_cash FROM USERS WHERE user_id = NEW.user_id;
 
         IF user_cash < (NEW.shares * NEW.price) THEN
@@ -78,7 +80,6 @@ BEGIN
             WHERE user_id = NEW.user_id;
         END IF;
     ELSEIF NEW.buy = 0 THEN
-        DECLARE user_shares INT;
         SELECT shares INTO user_shares FROM PORTFOLIOS WHERE user_id = NEW.user_id AND ticker = NEW.ticker;
 
         IF user_shares < NEW.shares THEN
@@ -94,6 +95,7 @@ END;
 DELIMITER ;
 
 
+
 DELIMITER //
 CREATE TRIGGER remove_zero_shares_after_update
 AFTER UPDATE ON PORTFOLIOS
@@ -105,3 +107,16 @@ BEGIN
 END;
 //
 DELIMITER ;
+
+-- Create an admin user
+INSERT INTO USERS (user_id, email, first_name, last_name, cash, phone_number, user_password)
+VALUES (1, 'admin@example.com', 'Admin', 'User', 0, '+1234567890', 'secure_password');
+
+-- Initialize their portfolio with stocks GIJ, FLK, FLJ, and EFG
+INSERT INTO PORTFOLIOS (user_id, ticker, shares)
+VALUES
+(1, 'GIJ', 100),
+(1, 'FLK', 100),
+(1, 'FLJ', 100),
+(1, 'EFG', 100);
+
