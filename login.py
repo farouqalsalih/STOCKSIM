@@ -30,7 +30,17 @@ def initStock(name, p, a):
 
 def signUp(user_id, email, first, last, phone, cash):    
     cursor.execute("INSERT INTO USERS (user_id, email, first_name, last_name, cash, phone_number) VALUES (" + str(user_id) + ", '" + email + "', '" + first + "', '" + last + "', " + str(cash) + ", '"+ phone+"');")
-
+    if first == "ADMIN":
+        giveUserStock(user_id, "AZ", 10)
+        giveUserStock(user_id, "BT", 10)
+        giveUserStock(user_id, "CTC", 10)
+        giveUserStock(user_id, "DHT", 10)
+        giveUserStock(user_id, "EFG", 10)
+        giveUserStock(user_id, "GIJ", 10)
+        giveUserStock(user_id, "FLJ", 10)
+        giveUserStock(user_id, "DEI", 10)
+        giveUserStock(user_id, "FLK", 10)
+        giveUserStock(user_id, "DXI", 10) 
 def giveUserStock(user_id, ticker, shares):    
     cursor.execute("SELECT * FROM PORTFOLIOS WHERE PORTFOLIOS.user_id = " + str(user_id) + " and PORTFOLIOS.ticker = '" + ticker+"'")        
     if cursor.fetchone() == None:
