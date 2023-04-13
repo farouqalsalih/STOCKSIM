@@ -14,43 +14,27 @@
         <img class = 'stocklogo' src="{{ url_for('static', filename = 'stocklogo.png') }}">
         <nav>
             <ul id = 'subpages'>
-                <li style="left:200px;"><a href="/">REGISTER</a></li>
-                <li><a href="signin.html">LOG IN</a></li>
                 <li><a href="home.html">HOME</a></li>
                 <li><a href="portfolio.html">ACCOUNT</a></li>
+                <li><a href="tradestock.html">TRADE STOCK</a></li>
+                <li><a href="leaderboard.html">LEADERBOARD</a></li>
+
+                {% if current_user.is_authenticated %}
+                    <li class = 'specificli' style="margin-left: 200px;"> <a> YOU ARE CURRENTLY LOGGED IN AS: {{current_user.email}} </a> </li>
+                    <li> <a href="/logout"> LOGOUT </a> </li>
+                {% endif %}
             </ul>
         </nav>
-    </div>
+    </div> 
     <br><br><br><br><br><br><br><br><br><br>
+
 
     <div class = "bottomsection">
 
         <div class = "leftsection">
             <div class = "topleftsection">
                 <h1 class = "accountvaluetitle">Account Value</h1>
-                <h2 class = "accountvaluenum">$0.00</h2>
-                <table class = "accountvaluetable">
-                    <tbody>
-                        <tr>
-                            <td class = "accountvalueth"> Market Value </th>
-                            <td class = "accountvalueth"> Cash Balance </th>
-                            <td class = "accountvalueth">  Risk Level </th>
-                        </tr>
-                        <tr>
-                            <td class = "accountvaluetd">
-                                0
-                            </td>
-                            <td class = "accountvaluetd">
-                                0
-                            </td>
-                            <td class = "accountvaluetd">
-                                0
-                            </td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
-                
+                <h2 class = "accountvaluenum">{{cash}}</h2>
             </div>
 
             <div class = "bottomleftsection">
@@ -58,24 +42,44 @@
                 <table class = "transactiontable">
                     <thead>
                         <tr class = "transactionthead"> 
-                            <td class = "transactionth"> Market Value </th>
-                            <td class = "transactionth"> Cash Balance </th>
-                            <td class = "transactionth">  Risk Level </th>
+                            <td class = "transactionth"> Order ID </th>
+                            <td class = "transactionth"> Ticker </th>
+                            <td class = "transactionth">  Shares </th>
+                            <td class = "transactionth">  Price </th>
+                            <td class = "transactionth">  Transaction Type </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                        </tr>
-                        
+                        {% for order in transactions %}
+                       
+                            <tr>
+                                <td class = "transactiontd" style="text-align: center;">
+                                    {{order.order_id}}
+                                </td>
+                                <td class = "transactiontd" style="text-align: center;">
+                                    {{order.ticker}}
+                                </td>
+                                <td class = "transactiontd" style="text-align: center;">
+                                    {{order.shares}}
+                                </td>
+                                <td class = "transactiontd" style="text-align: center;">
+                                    {{order.price}}
+                                </td>
+                                {% if order.buy == True %}
+                                    <td class = "transactiontd" style="text-align: center;">
+                                        Bought
+                                    </td>
+                                {% else %}
+                                    <td class = "transactiontd" style="text-align: center;">
+                                        Sold
+                                    </td>
+                            
+                                {% endif %}
+
+                            
+                            </tr>
+                 
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -88,23 +92,23 @@
                 <table class = "transactiontable">
                     <thead>
                         <tr class = "transactionthead"> 
-                            <td class = "transactionth"> Market Value </th>
-                            <td class = "transactionth"> Cash Balance </th>
-                            <td class = "transactionth">  Risk Level </th>
+                            <td class = "transactionth"> Ticker </th>
+                            <td class = "transactionth"> Shares </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                            <td class = "transactiontd">
-                                0
-                            </td>
-                        </tr>
+                        {% for stock in positions %}
+                            {% if stock.shares > 0 %}
+                                <tr>
+                                    <td class = "transactiontd" style="text-align: center;">
+                                        {{stock.ticker}}
+                                    </td>
+                                    <td class = "transactiontd" style="text-align: center;">
+                                        {{stock.shares}}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
                         
                     </tbody>
                 </table>

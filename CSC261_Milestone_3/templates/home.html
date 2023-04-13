@@ -16,10 +16,14 @@
             <img class = 'stocklogo' src="{{ url_for('static', filename = 'stocklogo.png') }}">
             <nav>
                 <ul id = 'subpages'>
-                    <li style="left:200px;"><a href="/">REGISTER</a></li>
-                    <li><a href="signin.html">LOG IN</a></li>
                     <li><a href="home.html">HOME</a></li>
                     <li><a href="portfolio.html">ACCOUNT</a></li>
+                    <li><a href="tradestock.html">TRADE STOCK</a></li>
+                    <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class = 'specificli' style="margin-left: 150px;"> <a> YOU ARE CURRENTLY LOGGED IN AS: {{current_user.email}} </a> </li>
+                        <li> <a href="/logout"> LOGOUT </a> </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div> 
@@ -48,7 +52,13 @@
                                         <table class = "indexinfotable">
                                             <tr>
                                                 <td class = "lhsitd"> <h1>DOW JONES</h1> </td>
-                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                                <td class = "rhsitd">
+                                                    {% if index[ticker]['Trend'] == "Up" %}
+                                                        <b> <h3 class = 'greenmessage' style="margin:0;"> +{{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "greenmessage" style="margin: 0;"> +{{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% else %}
+                                                        <b> <h3 class = 'redmessage' style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "redmessage" style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                             
                                         </table>
@@ -59,7 +69,13 @@
                                         <table class = "indexinfotable">
                                             <tr>
                                                 <td class = "lhsitd"> <h1>S&P 500</h1> </td>
-                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                                <td class = "rhsitd">
+                                                    {% if index[ticker]['Trend'] == "Up" %}
+                                                        <b> <h3 class = 'greenmessage' style="margin:0;"> +{{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "greenmessage" style="margin: 0;"> +{{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% else %}
+                                                        <b> <h3 class = 'redmessage' style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "redmessage" style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                             
                                         </table>
@@ -69,7 +85,13 @@
                                         <table class = "indexinfotable">
                                             <tr>
                                                 <td class = "lhsitd"> <h1>NASDAQ</h1> </td>
-                                                <td class = "rhsitd"> <h3 style="margin:0;">change</h3> <h3 style="margin:0; float: left;">price</h3> </td>
+                                                <td class = "rhsitd">
+                                                    {% if index[ticker]['Trend'] == "Up" %}
+                                                        <b> <h3 class = 'greenmessage' style="margin:0;"> +{{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "greenmessage" style="margin: 0;"> +{{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% else %}
+                                                        <b> <h3 class = 'redmessage' style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PriceChange']) }}</h3> <h3 class = "redmessage" style="margin: 0;"> {{ "%.2f"|format(index[ticker]['PercentChange']) }}% </h3> </b>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                             
                                         </table>
@@ -178,10 +200,11 @@
                     <head>
                         
                             <td class = "popularstocktabletd"> <h2> Ticker </h2> </td>
+                            <td class = "popularstocktabletd"> <h2> Price </h2> </td>
                             <td class = "popularstocktabletd"> <h2> Market Cap </h2> </td>
                             <td class = "popularstocktabletd"> <h2> Volume </h2> </td>
-                            <td class = "popularstocktabletd"> <h2>  Week High </h2> </td>
-                            <td class = "popularstocktabletd"> <h2> Week Low </h2> </td>
+                            <td class = "popularstocktabletd"> <h2>  52 Week High </h2> </td>
+                            <td class = "popularstocktabletd"> <h2> 52 Week Low </h2> </td>
                         
                     </head>
                     <body>
@@ -276,20 +299,28 @@
                                             {% endif %}       
                                         
                                         </td>
+                                        <td class="popularstocktd">
+                                            <h2> <b>{{ "$%.2f"|format(stock[ticker]['Close'][stock[ticker]['Close'] |length  - 1]) }}</b> </h2>
+                                        </td>
                                         <td class = "popularstocktd">
-                                            <h5> <b>{{ "$%.2f"|format(stock[ticker]['Close'][stock[ticker]['Close'] |length  - 1]) }}</b> </h5>
+                                            <h2> <b>{{ stocksinfo[ticker][ticker]['marketCap'] }}</b> </h2>
                                         
                                         </td>
                                         <td class = "popularstocktd">
-                                            {% if stock[ticker]['Trend'] == "Up" %}
-                                            <b> <h5 class = 'greenmessage'> +{{ "$%.2f"|format(stock[ticker]['PriceChange']) }}</h5> <h5 class = "greenmessage"> +{{ "%.2f"|format(stock[ticker]['PercentChange']) }}% </h5> </b>
-                                            {% else %}
-                                            <b> <h5 class = 'redmessage'> {{ "$%.2f"|format(stock[ticker]['PriceChange']) }}</h5> <h5 class = "redmessage"> {{ "%.2f"|format(stock[ticker]['PercentChange']) }}% </h5> </b>
-                                            {% endif %}
+                                            <h2> <b>{{ stocksinfo[ticker][ticker]['volume'] }}</b> </h2>
+                                        </td>
+                                        <td class = "popularstocktd">
+                                            <h2> <b>{{ stocksinfo[ticker][ticker]['fiftyTwoWeekHigh'] }}</b> </h2>
+                                        </td>
+                                        <td class = "popularstocktd">
+                                            <h2> <b>{{ stocksinfo[ticker][ticker]['fiftyTwoWeekLow'] }}</b> </h2>
                                         </td>
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
+
+                        
+                        </div>
                     </body>
                 </table>
             </div>

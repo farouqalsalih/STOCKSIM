@@ -2,10 +2,21 @@ from multiprocessing.context import get_spawning_popen
 from sqlite3 import Date
 import yfinance as yf
 import pandas as pd
+from yahooquery import Ticker
+
+
 
 def getinfo(ticker):
-    tickerinfo = yf.Ticker(ticker)
-    return tickerinfo.info
+    tickerinfo = Ticker(ticker)
+    return tickerinfo.summary_detail
+
+def getinfoarray(tickers):
+    dict = {}
+    for ticker in tickers:
+        tickerinfo = Ticker(ticker)
+        print(ticker)
+        dict[ticker] = tickerinfo.summary_detail
+    return dict
 
 def getlabels(ticker, timeperiod, timeinterval = '1d'):
     tickerinfo = yf.Ticker(ticker)

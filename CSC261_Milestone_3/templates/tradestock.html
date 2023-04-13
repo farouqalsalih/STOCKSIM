@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=, initial-scale=1.0">
+        <title>Home Page</title>
+        <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link href="{{ url_for('static', filename ='main.css') }}" rel="stylesheet" />
+        <title>Document</title>
+    </head>
+    
+    <body>
+        <div class="navbar"> 
+            <img class = 'stocklogo' src="{{ url_for('static', filename = 'stocklogo.png') }}">
+            <nav>
+                <ul id = 'subpages'>
+                    <li><a href="home.html">HOME</a></li>
+                    <li><a href="portfolio.html">ACCOUNT</a></li>
+                    <li><a href="tradestock.html">TRADE STOCK</a></li>
+                    <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class = 'specificli' style="margin-left: 200px;"> <a> YOU ARE CURRENTLY LOGGED IN AS: {{current_user.email}} </a> </li>
+                        <li> <a href="/logout"> LOGOUT </a> </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div> 
+        <br><br><br><br><br><br><br><br><br><br>
+
+
+        <div class = "bodydiv">
+            
+    <form method="post" action="" style="display:flex;justify-content: center;">
+        <div>
+            {{ form.stock.label(class = "form-control-label") }}
+            {{ form.stock(class = "form-control form-control-lg") }}
+
+        </div>
+        <div>
+            {{ form.quantity.label(class = "form-control-label") }}
+            {{ form.quantity(class = "form-control form-control-lg") }}
+
+        </div>
+        <div>
+            {{ form.buy.label(class = "form-control-label") }}
+            {{ form.buy() }}
+        </div>
+        <div>
+            {{ form.price.label(class = "form-control-label") }}
+            {{ form.price() }}
+        </div>
+        <div>
+            {{ form.submits(class = "btn btn-outline-info") }}
+            {{ form.csrf_token }}
+        </div>
+    </form>
+                        
+    </div>
+    <br><br><br><br><br><br>
+
+</body>
+
+
+</html>

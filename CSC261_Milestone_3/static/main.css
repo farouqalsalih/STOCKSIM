@@ -212,7 +212,21 @@ form {
   height: 30%;
   margin-top: 20%;
   vertical-align: middle;
-
-  
 }
-
+.greenmessage {
+  color: rgb(0,204,0);
+}
+.redmessage {
+  color: rgb(255, 0, 0);
+}
+.tickercanvas {
+  margin: 0 auto;
+  border-left: 5px solid black;
+  border-bottom: 5px solid black;
+  margin-bottom: 50px;
+}
+#buytickertitle {
+  font-size: 75px;
+  font-weight: bold;
+  text-align: center;
+}
