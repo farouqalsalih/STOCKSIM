@@ -3,10 +3,10 @@ import datetime
 import random
 
 mydb = mysql.connector.connect(
-        host='Adams-MacBook-Pro.local',
+        host='host',
         database = 'stocksim',
         user='root',
-        password='Chris_Anthony30',
+        password='password',
         autocommit = False
         )
 cursor = mydb.cursor()
