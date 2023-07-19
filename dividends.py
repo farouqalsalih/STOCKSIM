@@ -5,10 +5,10 @@ import random
 ## make the DB yours and run  this to initialize Dividends 
 
 mydb = mysql.connector.connect(
-        host='Adams-MacBook-Pro.local',
+        host='host',
         database = 'stocksim',
         user='root',
-        password='Chris_Anthony30',
+        password='password',
         autocommit = False
         )
 cursor = mydb.cursor()
