@@ -2,7 +2,7 @@ import mysql.connector
 
 def get_database_connection():
     return mysql.connector.connect(
-        host='Farouqs-MacBook-Air.local',
+        host='host',
         database='stocksim',
         user='root',
         password='your_password',
